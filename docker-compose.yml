@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  mongo_database:
+    image: mongo:latest
+    container_name: mongo_database
+    volumes:
+      - database:/data/db
+volumes:
+  database: { }

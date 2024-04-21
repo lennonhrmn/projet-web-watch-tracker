@@ -1,7 +1,12 @@
 import Input from "@/components/onBoarding/Input";
 import React, { useCallback, useState } from "react";
+import axios from "axios";
+import { signIn } from "next-auth/react";
+import { FcGoogle } from "react-icons/fc";
+// import { FaGithub } from "react-icons/fa6";
+// import { FaFacebook } from "react-icons/fa";
 
-export default function OnBoarding() {
+const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -15,6 +20,34 @@ export default function OnBoarding() {
       currentVariant === "login" ? "signup" : "login"
     );
   }, []);
+
+  const login = useCallback(async () => {
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: "/library",
+      });
+
+    } catch (error) {
+      console.error(error);
+    }
+  }, [email, password]);
+
+  const register = useCallback(async () => {
+    try {
+      await axios.post("/api/register", {
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+
+      login();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [email, password, firstName, lastName, login]);
 
   return (
     <div
@@ -30,7 +63,7 @@ export default function OnBoarding() {
           alt="Logo"
           className="absolute top-0 left-0 m-4"
         />
-        <h1 className="text-4xl mb-4 font-bold">
+        <h1 className="text-4xl mb-4 text-left font-bold">
           {variant === "login" ? "Sign in" : "Create an account"}
         </h1>
         <form>
@@ -83,12 +116,50 @@ export default function OnBoarding() {
           </div>
 
           {variant === "login" ? (
+            <div>
             <button
+              onClick={(ev) => {
+                ev.preventDefault();
+                login();
+              }}
               type="submit"
               className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
             >
               Sign in
             </button>
+            <div className="flex flex-row items-center gap-4 mt-5 justify-center">
+              <div 
+              onClick={() => signIn("google", { callbackUrl: "/library" })}
+              className="
+              w-10
+              h-10
+              bg-white
+              rounded-full
+              flex
+              items-center
+              justify-center
+              cursor-pointer
+              hover:opacity-80
+              transition
+              ">
+                <FcGoogle size={30}/>
+              </div>
+              {/* <div className="
+              w-10
+              h-10
+              bg-white
+              rounded-full
+              flex
+              items-center
+              justify-center
+              cursor-pointer
+              hover:opacity-80
+              transition
+              ">
+                <FaFacebook size={30}/>
+              </div> */}
+            </div>
+            </div>
           ) : etape1 ? (
             <button
               onClick={(ev) => {
@@ -103,6 +174,10 @@ export default function OnBoarding() {
           ) : (
             <button
               type="submit"
+              onClick={(ev) => {
+                ev.preventDefault(); 
+                register();
+              }}
               className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
             >
               Submit
@@ -127,3 +202,5 @@ export default function OnBoarding() {
     </div>
   );
 }
+
+export default Auth;

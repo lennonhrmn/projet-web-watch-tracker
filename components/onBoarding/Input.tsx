@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface InputProps {
   id: string;
@@ -15,13 +15,20 @@ const Input: React.FC<InputProps> = ({
   label,
   type = "text",
 }) => {
+  const [inputHasValue, setInputHasValue] = useState(false);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputHasValue(event.target.value !== "");
+    onChange(event);
+  };
+
   return (
     <div className="relative">
       <input
         id={id}
         value={value}
         type={type}
-        onChange={onChange}
+        onChange={handleInputChange}
         className="
           block
           rounded-md
@@ -35,27 +42,26 @@ const Input: React.FC<InputProps> = ({
           apparence-none
           focus:outline-none
           focus:ring-0
-          peer
-          "
+        "
         placeholder=" "
       />
       <label
-        className="
-              absolute
-              text-md
-              text-zinc-400
-              duration-150
-              transform
-              —translate-y-3
-              scale—75
-              top-4
-              z-l0
-              origin-[0]
-              left-6
-              peer-placeholder-shown:scale-100
-              peer-placeholder-shown:translate-y-0
-              peer-focus:scale-75
-              peer-focus:-translate-y-3"
+        className={`
+          absolute
+          text-md
+          text-zinc-400
+          duration-150
+          origin-[0]
+          left-6
+          ${inputHasValue ? "top-1 text-sm" : "top-4"}
+          ${inputHasValue ? "text-zinc-400" : "text-gray-400"}
+          ${inputHasValue ? "peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100" : ""}
+          ${inputHasValue ? "peer-focus:translate-y-0 peer-focus:scale-100" : ""}
+          transition-all
+          pointer-events-none
+          transform
+          -translate-y-0
+        `}
         htmlFor={id}
       >
         {label}

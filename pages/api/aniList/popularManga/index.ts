@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     var query: string = `
         query { 
             Page(page: 1, perPage: 10) {
-                media(type:ANIME, sort:POPULARITY_DESC, isAdult:false) {
+                media(type:MANGA, sort:POPULARITY_DESC, isAdult:false) {
                     title {
                         english
                     }

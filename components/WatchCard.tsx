@@ -1,5 +1,7 @@
 import React from "react";
 import FavoriteButton from "./FavoriteButton";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 
 interface WatchCardProps {
@@ -7,6 +9,19 @@ interface WatchCardProps {
 }
 
 const WatchCard: React.FC<WatchCardProps> = ({ data }) => {
+    
+    const router = useRouter();
+
+    const handleCardClick = () => {
+        router.push({
+            pathname: "/content",
+            query: { title: data.title.english,
+                    description: data.description,
+                    coverImage: data.coverImage.large,
+                    } 
+        });
+    };
+    
     return (
         <div className="
             group 
@@ -15,8 +30,19 @@ const WatchCard: React.FC<WatchCardProps> = ({ data }) => {
             relative
             rounded-md
             w-40
-            h-38">
-            <img src={data.coverImage.large} alt={data.title.english} className="cursor-pointer object-fill transition duration shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-40 h-38"/>
+            h-38"
+            onClick={handleCardClick}>
+            <img src={data.coverImage.large} 
+                       alt={data.title.english} 
+                       className="cursor-pointer 
+                       object-fill 
+                       transition 
+                       duration 
+                       shadow-xl 
+                       rounded-md 
+                       group-hover:opacity-90 sm:group-hover:opacity-0 
+                       delay-300 
+                       w-full h-full"/>
             <div className="
                 opacity-0
                 absolute

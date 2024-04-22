@@ -11,7 +11,8 @@ const MangaPage = () => {
         setSelectedGenre(event.target.value);
     };
 
-    const { data: manga = [] } = useWatchList("manga");
+    const { data: trendingManga = [] } = useWatchList("trendingManga");
+    const { data: popularManga = [] } = useWatchList("popularManga");
 
     return (
         <div className='bg-black relative'>
@@ -24,11 +25,12 @@ const MangaPage = () => {
                         onChange={handleGenreChange}
                         value={selectedGenre}>
                     <option value="Genre" className="bg-transparent">Genre</option>
-                    <option value="manga" className="bg-transparent">Shonen</option>
+                    <option value="Manga" className="bg-transparent">Shonen</option>
                 </select>
             </div>
             <div className='absolute z-11 ml-3 top-80 translate-y-32'>
-                <WatchList title="Trending now" data={manga}/>
+                <WatchList title="Trending now" data={trendingManga}/>
+                <WatchList title="Popular now" data={popularManga}/>
             </div>
         </div>
     );

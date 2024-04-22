@@ -5,6 +5,8 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 
 import Navbar from "@/components/Navbar";
 import { MdWavingHand } from "react-icons/md";
+import WatchList from "@/components/WatchList";
+import useFavorite from "@/hooks/useFavorite";
 
 
 export async function getServerSideProps(context : NextPageContext) {
@@ -26,6 +28,7 @@ export async function getServerSideProps(context : NextPageContext) {
 
 const Library = () => {
     const { data: user } = useCurrentUser();
+    const { data: favoriteIds } = useFavorite();
     const name = user?.firstName;
     const [selectedCategory, setSelectedCategory] = useState("Series");
 
@@ -62,6 +65,7 @@ const Library = () => {
                         </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Wish list</h1>
+                            <WatchList title="Wish list" data={[]}/>
                         </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Finished watching</h1>

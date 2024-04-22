@@ -3,17 +3,16 @@ import PhotoALaUne from '@/components/PhotoALaUne';
 import useWatchList from '@/hooks/useWatchList';
 import React, { useState } from 'react';
 import WatchList from '@/components/WatchList';
-import useFavorite from '@/hooks/useFavorite';
 
 const AnimePage = () => {
     const [selectedGenre, setSelectedGenre] = useState("Genre");
-    const { data: favorites = [] } = useFavorite();
 
     const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedGenre(event.target.value);
     };
 
-    const { data: anime = [] } = useWatchList("anime");
+    const { data: trendingAnime = [] } = useWatchList("trendingAnime");
+    const { data: popularAnime = [] } = useWatchList("popularAnime");
 
     return (
         <div className='bg-black relative'>
@@ -30,8 +29,8 @@ const AnimePage = () => {
                 </select>
             </div>
             <div className='absolute z-11 ml-3 top-80 translate-y-32'>
-                <WatchList title="Trending now" data={anime}/>
-                <WatchList title="Favorites" data={favorites}/>
+                <WatchList title="Trending now" data={trendingAnime}/>
+                <WatchList title="Popular now" data={popularAnime}/>
             </div>
         </div>
     );

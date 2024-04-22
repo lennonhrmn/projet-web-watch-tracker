@@ -8,7 +8,7 @@ const useWatchList = (category: string) => {
     //     revalidateOnReconnect: false,
     // });
 
-    const { data, error, isLoading } = useSWR(`/api/aniList/trendingAnime`, fetcher, {
+    const { data, error, isLoading } = useSWR(`/api/aniList/${category}`, fetcher, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         revalidateOnReconnect: false,

@@ -1,5 +1,4 @@
 import React from "react";
-import { CiHeart } from "react-icons/ci";
 import FavoriteButton from "./FavoriteButton";
 
 
@@ -17,7 +16,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ data }) => {
             rounded-md
             w-40
             h-38">
-            <img src={data.imageUrl} alt={data.title} className="cursor-pointer object-contain transition duration shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-40 h-38"/>
+            <img src={data.coverImage.large} alt={data.title.english} className="cursor-pointer object-fill transition duration shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-40 h-38"/>
             <div className="
                 opacity-0
                 absolute
@@ -33,7 +32,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ data }) => {
                 group-hover:translate-y-[-4vw]
                 group-hover:opacity-100
                 ">
-                <img src={data.imageUrl} alt={data.title} className="
+                <img src={data.coverImage.large} alt={data.title.english} className="
                 cursor-pointer 
                 object-contain 
                 transition 
@@ -54,7 +53,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ data }) => {
                     shadow-md
                     rounded-b-md">
                     <div className="flex flex-row items-center gap-3">
-                        <FavoriteButton contentId={data?.id}/>
+                        <FavoriteButton contentId={data?.id ?? 0}/>
                         <p className="text-xs text-white">Add to library</p>
                     </div>
                 </div>

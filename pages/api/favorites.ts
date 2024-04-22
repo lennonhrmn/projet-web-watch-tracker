@@ -10,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const { currentUser } = await serveurAuth(req);
 
-        const favoriteContent = await prismadb.anime.findMany({
+        const favoriteContent = await prismadb.cacheData.findMany({
             where: {
                 id: {
                     in: currentUser?.favoriteIds,

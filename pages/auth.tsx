@@ -3,12 +3,12 @@ import React, { useCallback, useState } from "react";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-// import { FaGithub } from "react-icons/fa6";
-// import { FaFacebook } from "react-icons/fa";
+
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
@@ -89,9 +89,9 @@ const Auth = () => {
                     id="confirmPassword"
                     label="Confirm Password"
                     type="password"
-                    onChange={(ev: any) => setPassword(ev.target.value)}
+                    onChange={(ev: any) => setPasswordConfirmation(ev.target.value)}
                     // verifyPassword(ev.target.value)} à faire
-                    value={password}
+                    value={passwordConfirmation}
                   />
                 )}
               </>

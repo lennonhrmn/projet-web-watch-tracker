@@ -16,7 +16,7 @@ const PhotoALaUne = ({ category } : PhotoALaUneProps) => {
             </div>
             <div className="
                     absolute
-                    top-[20%]
+                    top-[30%]
                     ml-4
                     md:ml-16">
                     <p className="
@@ -52,7 +52,7 @@ const PhotoALaUne = ({ category } : PhotoALaUneProps) => {
                                 py-1 md:py-2
                                 px-2 md:px-4
                                 w-auto
-                                text-xs lg:text-lg
+                                text-xs
                                 font-semibold
                                 flex
                                 flex-row

@@ -3,9 +3,11 @@ import PhotoALaUne from '@/components/PhotoALaUne';
 import useWatchList from '@/hooks/useWatchList';
 import React, { useState } from 'react';
 import WatchList from '@/components/WatchList';
+import useFavorite from '@/hooks/useFavorite';
 
 const SeriesPage = () => {
     const [selectedGenre, setSelectedGenre] = useState("Genre");
+    const { data: favorites = [] } = useFavorite();
 
     const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedGenre(event.target.value);
@@ -27,8 +29,9 @@ const SeriesPage = () => {
                     <option value="Series" className="bg-transparent">Shonen</option>
                 </select>
             </div>
-            <div className='absolute z-11 ml-3 top-80 translate-y-24'>
+            <div className='absolute z-11 ml-3 top-80 translate-y-32'>
                 <WatchList title="Trending now" data={series}/>
+                <WatchList title="Favorites" data={favorites}/>
             </div>
         </div>
     );

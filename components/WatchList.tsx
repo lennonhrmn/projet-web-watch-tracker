@@ -21,9 +21,9 @@ const WatchList : React.FC<WatchListProps> = ({ data, title }) => {
             <p className='text-white test-md md:text-xl lg:text-2xl font-seminold'>
                 {title}
             </p>
-            <div className='grid grid-cols-6 gap-0'>
+            <div className='grid grid-cols-5 gap-4'>
                 {data.map((anime) => (
-                    <WatchCard key={anime.id} data={anime}/>
+                    <WatchCard key={anime?.id ?? 0} data={anime}/>
                 ))}
             </div>
         </div>

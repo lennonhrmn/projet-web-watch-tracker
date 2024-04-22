@@ -2,15 +2,44 @@ import axios from "axios";
 import React, { useCallback, useMemo } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFavorite from "@/hooks/useFavorite";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
 
 interface FavoriteButtonProps {
     contentId: string;
 }
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId }) => {
+    const { mutate: mutateFavorites } = useFavorite();
+    const { data: currentUser, mutate } = useCurrentUser();
+
+    const isFavorite = useMemo(() => {
+        const list = currentUser?.favoriteIds || [];
+
+        return list.includes(contentId);
+    }, [currentUser, contentId]);
+
+    const toggleFavorite = useCallback(async () => {
+        let response;
+
+        if (isFavorite) {
+            response = await axios.delete("/api/favorite", { data: { contentId } });
+        } else {
+            response = await axios.post("/api/favorite", { contentId });
+        }
+
+        const updatedFavoriteIds = response?.data?.favoriteIds;
+
+        mutate({ ...currentUser, favoriteIds: updatedFavoriteIds });
+
+        mutateFavorites();
+    }, [currentUser, contentId, isFavorite, mutate, mutateFavorites]);
+
+    const Icon = isFavorite ? AiOutlineCheck : AiOutlinePlus;
+
     return (
-        <div className="
+        <div 
+            onClick={toggleFavorite}
+            className="
             cursor-pointer
             group/item
             w-5
@@ -25,7 +54,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId }) => {
             transition
             hover:border-neutral-300
             ">
-            <AiOutlinePlus size={20} className="text-white"/>
+            <Icon size={20} className="text-white"/>
         </div>
     );
 }

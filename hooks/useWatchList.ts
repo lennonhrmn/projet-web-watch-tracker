@@ -13,7 +13,7 @@ const useWatchList = (category: string) => {
         revalidateIfStale: false,
         revalidateOnReconnect: false,
     });
-    console.log(data);
+
     return {
         data,
         error,

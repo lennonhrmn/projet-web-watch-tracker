@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFavorite from "@/hooks/useFavorite";
 import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
+import { getSession } from "next-auth/react";
 
 interface FavoriteButtonProps {
     contentId: string;
@@ -19,12 +20,14 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId }) => {
     }, [currentUser, contentId]);
 
     const toggleFavorite = useCallback(async () => {
+
+        console.log("toggleFavorite ", currentUser)
         let response;
 
         if (isFavorite) {
-            response = await axios.delete("/api/favorite", { data: { contentId } });
+            response = await axios.delete("/api/favorite", { data: { contentId } , withCredentials: true});
         } else {
-            response = await axios.post("/api/favorite", { contentId });
+            response = await axios.post("/api/favorite", { contentId, withCredentials: true });
         }
 
         const updatedFavoriteIds = response?.data?.favoriteIds;

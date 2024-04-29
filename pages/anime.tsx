@@ -6,7 +6,6 @@ import WatchList from '@/components/WatchList';
 
 const AnimePage = () => {
     const [selectedGenre, setSelectedGenre] = useState("Genre");
-
     const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedGenre(event.target.value);
     };
@@ -29,8 +28,8 @@ const AnimePage = () => {
                 </select>
             </div>
             <div className='absolute z-11 ml-3 top-80 translate-y-32'>
-                <WatchList title="Trending now" data={trendingAnime}/>
-                <WatchList title="Popular now" data={popularAnime}/>
+                <WatchList title="Trending now" data={trendingAnime} type="ANIME"/>
+                <WatchList title="Popular now" data={popularAnime} type="ANIME"/>
             </div>
         </div>
     );

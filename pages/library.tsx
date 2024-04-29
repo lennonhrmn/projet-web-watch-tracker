@@ -1,5 +1,5 @@
 import { NextPageContext } from "next"
-import { getSession, } from "next-auth/react"
+import { getSession, useSession, } from "next-auth/react"
 import React, { useState } from 'react';
 import useCurrentUser from "@/hooks/useCurrentUser";
 
@@ -28,9 +28,10 @@ export async function getServerSideProps(context : NextPageContext) {
 
 const Library = () => {
     const { data: user } = useCurrentUser();
-    const { data: favoriteIds } = useFavorite();
+    const { data: favorites = [] } = useFavorite();
     const name = user?.firstName;
     const [selectedCategory, setSelectedCategory] = useState("Series");
+    const session = useSession();
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedCategory(event.target.value);
@@ -41,7 +42,7 @@ const Library = () => {
             <Navbar/>
             <div className="pt-16">
                 <div className="flex mt-5 justify-center text-white sm:text-2xl md:text-3xl">
-                    <h1 className="mr-3">Welcome back {name}</h1>
+                    <h1 className="mr-3">Welcome {name}</h1>
                     <MdWavingHand className="mt-1"/>
                 </div>
                 <div className="ml-10 p-5">
@@ -65,7 +66,8 @@ const Library = () => {
                         </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Wish list</h1>
-                            <WatchList title="Wish list" data={[]}/>
+                            {selectedCategory === "Anime" && (<WatchList title="Wish List" data={favorites} type="ANIME"/>)}
+                            {selectedCategory === "Manga" && (<WatchList title="Wish List" data={favorites} type="MANGA"/>)}
                         </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Finished watching</h1>

@@ -1,23 +1,16 @@
 // Here we define our query as a multi-line string
 // Storing it in a separate .graphql/.gql file is also possible
 var query = `
-query { 
-  Page(page: 1, perPage: 10)    
-  {
-    media(type:ANIME, format:TV, sort:POPULARITY_DESC, isAdult:false) {
-        title {
-            english
-        }
-        description(asHtml: false)
-        popularity
-        coverImage {
-            large
-            medium
-            color
-        }
+query ($id: Int) { # Define which variables will be used in the query (id)
+    Media (id: $id, type: ANIME) { # Insert our variables into the query arguments (id) (type: ANIME is hard-coded in the query)
+      id
+      title {
+        romaji
+        english
+        native
+      }
     }
-}
-}
+  }
 `;
 
 // Define the config we'll need for our Api request

@@ -30,8 +30,6 @@ const SeriesPage = () => {
                 </select>
             </div>
             <div className='absolute z-11 ml-3 top-80 translate-y-32'>
-                <WatchList title="Trending now" data={series}/>
-                <WatchList title="Favorites" data={favorites}/>
             </div>
         </div>
     );

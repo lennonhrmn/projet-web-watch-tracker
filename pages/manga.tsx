@@ -25,12 +25,12 @@ const MangaPage = () => {
                         onChange={handleGenreChange}
                         value={selectedGenre}>
                     <option value="Genre" className="bg-transparent">Genre</option>
-                    <option value="Manga" className="bg-transparent">Shonen</option>
+                    <option value="manga" className="bg-transparent">Shonen</option>
                 </select>
             </div>
             <div className='absolute z-11 ml-3 top-80 translate-y-32'>
-                <WatchList title="Trending now" data={trendingManga}/>
-                <WatchList title="Popular now" data={popularManga}/>
+                <WatchList title="Trending now" data={trendingManga} type="MANGA"/>
+                <WatchList title="Popular now" data={popularManga} type="MANGA"/>
             </div>
         </div>
     );

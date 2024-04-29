@@ -23,7 +23,7 @@ model User {
   hashedPassword String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  favoriteIds    String[]  @db.ObjectId
+  favoriteIds    String[]
   sessions       Session[]
   accounts       Account[]
 }
@@ -95,6 +95,7 @@ model Manga {
 
 model PhotoALaUne {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
+  key         String
   title       String
   imageUrl    String
   category    String

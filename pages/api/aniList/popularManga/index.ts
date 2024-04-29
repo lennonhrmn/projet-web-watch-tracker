@@ -13,6 +13,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         query { 
             Page(page: 1, perPage: 10) {
                 media(type:MANGA, sort:POPULARITY_DESC, isAdult:false) {
+                    id
                     title {
                         english
                     }

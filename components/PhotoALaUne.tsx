@@ -1,13 +1,23 @@
 import usePhoto from "@/hooks/usePhoto";
 import React from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { useRouter } from "next/router";
 
 interface PhotoALaUneProps {
     category: string;
 }
 
 const PhotoALaUne = ({ category } : PhotoALaUneProps) => {
+    const router = useRouter();
     const { data } = usePhoto(category);
+    const categoryMAJ = category.toUpperCase();
+
+    const handleInfoClick = () => {
+        router.push({
+          pathname: "/content",
+          query: { id: data.key, type: categoryMAJ}
+        });
+      };
 
     return (
         <div>
@@ -44,7 +54,9 @@ const PhotoALaUne = ({ category } : PhotoALaUneProps) => {
                         mt-3
                         md:mt-4
                         gap-3">
-                        <button className="
+                        <button 
+                        onClick={handleInfoClick}
+                        className="
                                 bg-white
                                 text-white
                                 bg-opacity-30

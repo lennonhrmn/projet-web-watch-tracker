@@ -1,11 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { without } from 'lodash';
 import prismadb from '@/lib/prismadb';
-import serveurAuth from '@/lib/serverAuth';
+import serveurAuth from '@/lib/serveurAuth';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { currentUser } = await serveurAuth(req);
     const { contentId } = req.body;
+
+    if (!currentUser || !currentUser.email) {
+        return res.status(401).json({ error: 'Not signed in' });
+    }
 
     if (req.method === 'POST') {
 
@@ -15,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
             data: {
                 favoriteIds: {
-                    push: contentId
+                    push: contentId.toString(),
                 }
             }
         })

@@ -3,6 +3,25 @@ import PhotoALaUne from '@/components/PhotoALaUne';
 import useWatchList from '@/hooks/useWatchList';
 import React, { useState } from 'react';
 import WatchList from '@/components/WatchList';
+import { getSession } from 'next-auth/react';
+import { NextPageContext } from 'next';
+
+export async function getServerSideProps(context : NextPageContext) {
+    const session = await getSession(context);
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/auth",
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
+}
 
 const AnimePage = () => {
     const [selectedGenre, setSelectedGenre] = useState("Genre");

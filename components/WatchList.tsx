@@ -13,7 +13,6 @@ const WatchList : React.FC<WatchListProps> = ({ data, title, type }) => {
   const [startIndex, setStartIndex] = useState(0);
 
   if (isEmpty(data)) {
-    console.log('No data');
     return null;
   }
 
@@ -44,7 +43,7 @@ const WatchList : React.FC<WatchListProps> = ({ data, title, type }) => {
             <WatchCard key={item?.id ?? 0} data={item} type={type}/>
             ))}
         </div>
-        <FaRegArrowAltCircleRight className={`text-white ml-3 mt-24 cursor-pointer ${!canGoNext && 'opacity-50'}`} size={30} onClick={handleNextClick}/>
+        <FaRegArrowAltCircleRight className={`text-white ml-5 mt-24 cursor-pointer ${!canGoNext && 'opacity-50'}`} size={30} onClick={handleNextClick}/>
       </div>
     </div>
   )

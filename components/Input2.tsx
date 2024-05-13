@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, PropsWithChildren } from "react";
 
 interface InputProps {
   id: string;
@@ -6,6 +6,7 @@ interface InputProps {
   value: string;
   label: string;
   type?: string;
+  children?: React.ReactNode;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -14,6 +15,7 @@ const Input: React.FC<InputProps> = ({
   value,
   label,
   type = "text",
+  children
 }) => {
   const [inputHasValue, setInputHasValue] = useState(false);
 
@@ -32,8 +34,8 @@ const Input: React.FC<InputProps> = ({
         className="
           block
           rounded-md
-          px-6
-          pt-6
+          px-2
+          pt-1
           pb-1
           w-full
           text-md
@@ -53,7 +55,7 @@ const Input: React.FC<InputProps> = ({
           duration-150
           origin-[0]
           left-6
-          ${inputHasValue ? "top-1 text-sm" : "top-4"}
+          ${inputHasValue ? "top-1 text-sm" : "top-1"}
           ${inputHasValue ? "text-zinc-400" : "text-gray-400"}
           ${inputHasValue ? "peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100" : ""}
           ${inputHasValue ? "peer-focus:translate-y-0 peer-focus:scale-100" : ""}
@@ -66,6 +68,11 @@ const Input: React.FC<InputProps> = ({
       >
         {label}
       </label>
+      {children && ( 
+        <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+          {children}
+        </div>
+      )}
     </div>
   );
 };

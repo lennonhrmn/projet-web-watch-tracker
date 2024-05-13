@@ -1,11 +1,12 @@
-import Input from "@/components/onBoarding/Input";
+import Input from "@/components/Input";
 import React, { useCallback, useState } from "react";
 import axios from "axios";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 
 
 const Auth = () => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");

@@ -28,11 +28,14 @@ export async function getServerSideProps(context : NextPageContext) {
 
 const Library = () => {
     const { data: user } = useCurrentUser();
-    const { data: favorites = [] } = useFavorite();
     const name = user?.firstName;
-    const [selectedCategory, setSelectedCategory] = useState("Series");
+    const [selectedCategory, setSelectedCategory] = useState("Anime");
+    const { data: favorites = [] } = useFavorite(selectedCategory);
     const session = useSession();
-
+    setTimeout(() => {
+        console.log("fav", favorites);
+    }, 10000)
+    
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedCategory(event.target.value);
     };
@@ -52,26 +55,22 @@ const Library = () => {
                                 className="cursor-pointer sm:text-1xl md:text-2xl mt-1 text-white bg-black hover:text-gray-300 translation"
                                 onChange={handleCategoryChange}
                                 value={selectedCategory}>
-                                    <option value="Series">Series</option>
                                     <option value="Anime">Anime</option>
                                     <option value="Manga">Manga</option>
                         </select>
                     </div>
-                    <div>  
-                        <h1 className="text-white sm:text-2xl md:text-3xl mt-8">{selectedCategory}</h1>
-                    </div>
                     <div className="inline-block text-center space-y-4 sm:space-y-10">
-                        <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
+                        {/* <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Currently watching</h1>
                         </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
-                            <h1 className="text-black text-sm sm:text-1xl font-bold">Wish list</h1>
+                            <h1 className="text-black text-sm sm:text-1xl font-bold">Wish list</h1> */}
                             {selectedCategory === "Anime" && (<WatchList title="Wish List" data={favorites} type="ANIME"/>)}
                             {selectedCategory === "Manga" && (<WatchList title="Wish List" data={favorites} type="MANGA"/>)}
-                        </div>
+                        {/* </div>
                         <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
                             <h1 className="text-black text-sm sm:text-1xl font-bold">Finished watching</h1>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

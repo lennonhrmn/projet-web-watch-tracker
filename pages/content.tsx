@@ -8,6 +8,7 @@ import { mutate } from 'swr';
 import ReactCountryFlag from "react-country-flag";
 import { FaCircleArrowLeft } from "react-icons/fa6";
 import FavoriteButton from '@/components/FavoriteButton';
+import { FaHeart } from "react-icons/fa";
 
 
 const ContentPage = () => {
@@ -69,8 +70,8 @@ const ContentPage = () => {
                 onClick={handleBackButtonClick} 
             />
             <div className='flex items-start absolute z-2'>
-                <img src={coverImage.large} className={`${expanded ? 'w-full h-75 top-24 left-[65%] relative z-1' : 'ml-32 mt-24'} `}/>
-                <div className={`${expanded ? 'relative top-24 z-3 mr-32' : 'ml-32 mt-24'}`}>
+                <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `}/>
+                <div className={`${expanded ? 'relative ml-24 mt-20 z-3' : 'ml-24 mt-20'}`}>
                     <p className="
                         text-white
                         text-4xl
@@ -96,61 +97,81 @@ const ContentPage = () => {
                         text-white
                         text-[14px]
                         mt-3
-                        w-[50%]
+                        w-[80%]
                         drop-sahdow-xl">
                         {truncatedDescription}
-                        <div className='flex flex-row'>
-                        <button className="
-                                bg-white
-                                text-white
-                                bg-opacity-30
-                                rounded-md
-                                mt-1
-                                mr-3
-                                mb-1
-                                py-1
-                                px-1 
-                                w-auto
-                                text-xs
-                                font-semibold
-                                flex
-                                flex-row
-                                items-center
-                                hover:bg-opacity-20
-                                transition"
-                                onClick={toggleDescription}>
-                                {expanded ? (
-                                    <>
-                                        <CiUnread className='mr-1'/>
-                                        Read Less
-                                    </>
-                                ) : (
-                                    <>
-                                        <CiRead className='mr-1'/>
-                                        Read More
-                                    </>
-                                )}
-                        </button>
-                        <FavoriteButton contentId={typeof id === 'string' ? id : ''}/>
+                        <div className='flex flex-row space-x-3'>
+                            <button className="
+                                    bg-white
+                                    text-white
+                                    bg-opacity-30
+                                    rounded-md
+                                    mt-1
+                                    mb-1
+                                    py-1
+                                    px-1 
+                                    w-auto
+                                    text-xs
+                                    font-semibold
+                                    flex
+                                    flex-row
+                                    items-center
+                                    hover:bg-opacity-20
+                                    transition"
+                                    onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
+                                    {expanded ? (
+                                        <>
+                                            <CiUnread className='mr-1'/>
+                                            Read Less
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CiRead className='mr-1'/>
+                                            Read More
+                                        </>
+                                    )}
+                            </button>
+                            <div className='mt-1'>
+                                <FavoriteButton contentId={typeof id === 'string' ? id : ''}/>
+                            </div>
+                            <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
+                                <p className='text-white text-xs'>{ favourites }</p>
+                                <FaHeart className='text-red-500 text-1xl'/>
+                            </div>
+                            <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
                         </div>
                     </p>
-                    <p className='text-white text-1xl'>Genres - {genres.join(', ')}</p>
-                    <p className='text-white text-1xl'>Release year - { startDate.year }</p>
-                    <p className='text-white text-1xl'>Status - { status }</p>
-                    {type === 'ANIME' && (
+                    {genres && (
+                        <div className="flex mt-2">
+                            {genres.map((genre: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
+                                <div key={index} className="flex items-center justify-center border border-white rounded-md p-1 mr-1">
+                                    <p className="text-white text-xs">{genre}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div className='flex'>
+                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
+                        <p className='text-white text-xs'>Release year - { startDate.year }</p>
+                    </div>
+                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
+                        <p className='text-white text-xs'>Status - { status }</p>
+                    </div>
+                    </div>
+                    {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
+                        <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
+                            <p className='text-white text-xs'>Next episode - { formatTime(nextAiringEpisode.timeUntilAiring) }</p>
+                        </div>
+                    )}
+                    {/* {type === 'ANIME' && (
                         <p className='text-white text-1xl'>Number of episodes - { content?.episodes }</p>
                     )}
                     {type === 'MANGA' && (
                         <p className='text-white text-1xl'>Number of chapters - { content?.chapters }</p>
-                    )}
-                    <p className='text-white text-1xl'>Last updated - { updatedAt } (à modifier)</p>
-                    <p className='text-white text-1xl'>Number of favourited - { favourites }</p>
-                    {nextAiringEpisode && nextAiringEpisode.episode && (
-                        <p className='text-white text-1xl'>Next Episode - { nextAiringEpisode.episode }</p>)}
-                    {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
-                        <p className='text-white text-1xl'>Time until next episode - { formatTime(nextAiringEpisode.timeUntilAiring) }</p>
-                    )}
-                    <p className='text-white text-1xl'>Country of origin - <ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
+                    )} */}
+                    {/* <p className='text-white text-1xl'>Last updated - { updatedAt } (à modifier)</p> */}
+                    {/* {nextAiringEpisode && nextAiringEpisode.episode && (
+                        <p className='text-white text-1xl'>Next Episode - { nextAiringEpisode.episode }</p>)} */}
                     {/* <p className='text-white text-1xl'>Sources - { sources } (fonctionne pas ?)</p> */}
                     {/* <p className='text-white text-1xl'>Trailer link - { trailer.site } (pas terrible)</p> */}
                     {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}

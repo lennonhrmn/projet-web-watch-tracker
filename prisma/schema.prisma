@@ -65,34 +65,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Series {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  director    String
-  actors      String[]
-  imageUrl    String
-  genre       String
-}
-
-model Anime {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  animeStudio String
-  description String
-  imageUrl    String
-  genre       String
-}
-
-model Manga {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  author      String
-  description String
-  imageUrl    String
-  genre       String
-}
-
 model PhotoALaUne {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   key         String

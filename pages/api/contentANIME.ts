@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prismadb from "@/lib/prismadb";
 import { PrismaClient } from '@prisma/client';
-import serveurAuth from "@/lib/serverAuth";
+import serveurAuth from "@/lib/serveurAuth";
 
 const prisma = new PrismaClient();
 

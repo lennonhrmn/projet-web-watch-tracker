@@ -4,7 +4,8 @@ import prismadb from "@/lib/prismadb";
 
 
 const serveurAuth = async (req: NextApiRequest) => {
-    const session = await getSession({ req });
+
+    const session = await getSession({ req }) || req.body.session;
 
     if (!session?.user?.email) {
         return {};

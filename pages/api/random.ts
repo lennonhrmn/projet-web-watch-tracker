@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisamdb from '@/lib/prismadb';
-import serveurAuth from '@/lib/serverAuth';
+import serveurAuth from '@/lib/serveurAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'GET') {

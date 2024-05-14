@@ -4,6 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useFavorite from "@/hooks/useFavorite";
 import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
 import { getSession, useSession } from "next-auth/react";
+import { mutate } from "swr";
 
 interface FavoriteButtonProps {
     contentId: string;
@@ -11,9 +12,10 @@ interface FavoriteButtonProps {
 }
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
+    const { data : currentSession } = useSession();
     const { mutate: mutateFavorites } = useFavorite(type);
     const { data: currentUser, mutate } = useCurrentUser();
-    const { data : currentSession } = useSession();
+    
 
     const isFavorite = useMemo(() => {
         const list = currentUser?.favoriteIds || [];

@@ -1,12 +1,11 @@
-import { RxHamburgerMenu } from "react-icons/rx";
-import NavbarItem from "./NavbarItem";
-import MobileMenu from "./MobileMenu";
-import React, { use, useCallback, useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
-import { useRouter } from "next/router";
-import { signOut } from "next-auth/react";
-import Link from "next/link";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { RxHamburgerMenu } from 'react-icons/rx';
+import NavbarItem from './NavbarItem';
+import MobileMenu from './MobileMenu';
+import SearchBar from './searchBar';
 
 const TOP_OFFSET = 66;
 
@@ -14,16 +13,6 @@ const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const router = useRouter();
-  const [searchFormActive, setSearchFormActive] = useState(false);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-
-const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const results = await searchAnime(searchQuery);
-    setSearchResults(results);
-};
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,18 +23,18 @@ const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMobileMenu = useCallback(() => {
-    setShowMobileMenu((current) => !current);
-  }, []);
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(!showMobileMenu);
+  };
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const category = event.target.value;
-    if (category !== "category") {
+    if (category !== 'category') {
       router.push(`/${category}`);
     }
   };
@@ -62,7 +51,7 @@ const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
           items-center
           transition
           duration-500
-          ${showBackground ? "bg-black bg-opacity-100" : ""}
+          ${showBackground ? 'bg-black bg-opacity-100' : ''}
         `}
       >
         <img className="h-6 lg:h-7" src="/images/logo/logo.jpg" />
@@ -88,7 +77,7 @@ const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
           <Link href="/account">
             <NavbarItem label="Account" />
           </Link>
-          <div onClick={() => signOut({ callbackUrl: "/auth" })} className="cursor-pointer">
+          <div onClick={() => signOut({ callbackUrl: '/auth' })} className="cursor-pointer">
             <NavbarItem label="Sign out" />
           </div>
         </div>
@@ -96,40 +85,7 @@ const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
           <RxHamburgerMenu className="text-white transition" />
           <MobileMenu visible={showMobileMenu} />
         </div>
-        {!searchFormActive && (
-        <div
-          className="flex flex-row ml-auto gap-7 items-center cursor-pointer text-white"
-          onClick={() => setSearchFormActive(!searchFormActive)}
-        >
-          <BsSearch />
-        </div>)}
-        {searchFormActive && (
-            <>
-                <form onSubmit={(e) => e.preventDefault()} className="flex flex-row ml-auto gap-2 items-center">
-                <input
-                    type="text"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === "Enter") {
-                        handleSearch(e as unknown as React.FormEvent<HTMLFormElement>);
-                    }
-                    }}
-                    className="text-gray-200 bg-transparent focus:outline-none border-b-2 border-gray-400 py-1 px-2"
-                />
-                <button type="submit" className="text-gray-200 hover:text-gray-400 cursor-pointer transition">
-                    <BsSearch />
-                </button>
-                </form>
-                <div
-                className="flex flex-row ml-3 items-center cursor-pointer text-white"
-                onClick={() => setSearchFormActive(false)}
-                >
-                <RxCross2 />
-                </div>
-            </>
-        )}
+        <SearchBar />
       </div>
     </nav>
   );

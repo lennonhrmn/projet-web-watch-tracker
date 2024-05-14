@@ -32,10 +32,12 @@ const WatchList : React.FC<WatchListProps> = ({ data, title, type }) => {
   };
 
   return (
-    <div className='px-4 mb-5 space-y-2'>
-      <p className='text-white test-md md:text-xl lg:text-2xl font-seminold'>
-        {title}
-      </p>
+    <div className='px-4 mb-5 space-y-2 mt-2'>
+      <div className="rounded-lg bg-white p-1 inline-block ml-10 opacity-90">
+        <p className='text-black text-md md:text-xl font-semibold'>
+          {title}
+        </p>
+      </div>
       <div className='flex flex-row'>
         <FaRegArrowAltCircleLeft className={`text-white mr-2 mt-24 cursor-pointer ${!canGoPrev && 'opacity-50'}`} size={30} onClick={handlePrevClick}/>
         <div className='grid grid-cols-6 gap-3'>

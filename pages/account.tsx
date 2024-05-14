@@ -28,8 +28,6 @@ export async function getServerSideProps(context : NextPageContext) {
 
 const AccountPage = () => {
     const { data: currentUser} = useCurrentUser();
-
-    console.log("sessssssiooooon : ",currentUser);
     const [email, setEmail] = useState(currentUser.email);
     const [firstName, setFirstName] = useState(currentUser.firstName);
     const [lastName, setLastName] = useState(currentUser.lastName);

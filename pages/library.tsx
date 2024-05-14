@@ -32,9 +32,7 @@ const Library = () => {
     const [selectedCategory, setSelectedCategory] = useState("Anime");
     const { data: favorites = [] } = useFavorite(selectedCategory);
     const session = useSession();
-    setTimeout(() => {
-        console.log("fav", favorites);
-    }, 10000)
+  
     
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedCategory(event.target.value);
@@ -48,8 +46,8 @@ const Library = () => {
                     <h1 className="mr-3">Welcome {name}</h1>
                     <MdWavingHand className="mt-1"/>
                 </div>
-                <div className="ml-10 p-5">
-                    <div className="flex gap-8">
+                <div>
+                    <div className="ml-10 p-5 flex gap-8">
                         <h1 className="text-white sm:text-2xl md:text-3xl">My Library</h1>
                         <select id="categorySelect" 
                                 className="cursor-pointer sm:text-1xl md:text-2xl mt-1 text-white bg-black hover:text-gray-300 translation"
@@ -59,18 +57,9 @@ const Library = () => {
                                     <option value="Manga">Manga</option>
                         </select>
                     </div>
-                    <div className="inline-block text-center space-y-4 sm:space-y-10">
-                        {/* <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
-                            <h1 className="text-black text-sm sm:text-1xl font-bold">Currently watching</h1>
-                        </div>
-                        <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
-                            <h1 className="text-black text-sm sm:text-1xl font-bold">Wish list</h1> */}
-                            {selectedCategory === "Anime" && (<WatchList title="Wish List" data={favorites} type="ANIME"/>)}
-                            {selectedCategory === "Manga" && (<WatchList title="Wish List" data={favorites} type="MANGA"/>)}
-                        {/* </div>
-                        <div className="rounded-lg bg-white p-1 mt-4 sm:mt-8">
-                            <h1 className="text-black text-sm sm:text-1xl font-bold">Finished watching</h1>
-                        </div> */}
+                    <div >
+                        {selectedCategory === "Anime" && (<WatchList title="Wish List" data={favorites} type="ANIME"/>)}
+                        {selectedCategory === "Manga" && (<WatchList title="Wish List" data={favorites} type="MANGA"/>)}
                     </div>
                 </div>
             </div>

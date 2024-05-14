@@ -14,8 +14,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (Array.isArray(category)) category = category[0];
 
-        console.log(typeof category, category);
-
         const { currentUser } = await serveurAuth(req);
 
         const favoriteIds = currentUser?.favoriteIds ?? [];

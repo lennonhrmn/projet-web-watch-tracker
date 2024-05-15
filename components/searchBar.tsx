@@ -16,7 +16,7 @@ const SearchBar = () => {
     
       const handleSearchContent = (resultId: string, resultType: string) => {
         router.push({
-          pathname: "/content",
+          pathname: `/content${resultType}`,
           query: { id: resultId, type: resultType}
         });
 

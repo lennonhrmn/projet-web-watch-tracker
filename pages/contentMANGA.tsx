@@ -50,11 +50,10 @@ const ContentPage = () => {
         setExpanded(!expanded);
     };
 
-    const { title, description, genres, status, episodes, startDate, coverImage, bannerImage, updatedAt, nextAiringEpisode, popularity, favourites, 
+    const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favourites, 
     countryOfOrigin, sources, trailer, studios } = content ?? 
-    { title: { english: '', romaji: '' }, description: '', genres: [], status: '', episodes: '', startDate: { year: '', month: '', day: ''}, 
-    coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', nextAiringEpisode: { airingAt: '', timeUntilAiring: '', episode: '' }, 
-    popularity: '', favourites:'', countryOfOrigin : '', sources: '', trailer: { site: '', thumbnail: ''}, studios: { node: { name: ''}}};
+    { title: { english: '', romaji: '' }, description: '', genres: [], status: '', chapters: '', volumes: '', startDate: { year: '', month: '', day: ''}, 
+    coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', popularity: '', favourites:'', countryOfOrigin : '', sources: '', trailer: { site: '', thumbnail: ''}, studios: { node: { name: ''}}};
 
     const truncatedDescription = (description ?? '').length > 200 && !expanded 
         ? `${(description ?? '').slice(0, 200)}...` 
@@ -134,7 +133,7 @@ const ContentPage = () => {
                             <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
                             <div className='flex flex-row space-x-3'>
                             <DropdownList
-                                episodes={episodes || nextAiringEpisode.episode - 1} 
+                                episodes={chapters} 
                                 onSelectEpisode={setSelectedEpisode}
                                 savedEpisodes={readEpisodes} 
                             />
@@ -159,11 +158,11 @@ const ContentPage = () => {
                         <p className='text-white text-xs'>Status - { status }</p>
                     </div>
                     </div>
-                    {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
+                    {/* {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
                         <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
                             <p className='text-white text-xs'>Next episode - { formatTime(nextAiringEpisode.timeUntilAiring) }</p>
                         </div>
-                    )}
+                    )} */}
                     {/* {type === 'ANIME' && (
                         <p className='text-white text-1xl'>Number of episodes - { content?.episodes }</p>
                     )}

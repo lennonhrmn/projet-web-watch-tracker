@@ -28,6 +28,15 @@ model User {
   accounts       Account[]
 }
 
+// model Favorite {
+//   id          String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId      String @db.ObjectId
+//   contentId   String
+//   lastEpisode Int?
+
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
+
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   userId            String  @db.ObjectId

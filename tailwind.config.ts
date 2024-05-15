@@ -18,7 +18,7 @@ const config: Config = {
         '80': '20rem',  // 320px
         '96': '24rem',  // 384px
         // Add as many as you need...
-      }
+      },
     },
   },
   plugins: [],

@@ -26,7 +26,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             .map(cacheData => JSON.parse(cacheData.value))
             //.forEach(media => console.log("media", media, media.id))
             .filter(media => favoriteIds.includes(media.id.toString()))
-        return res.status(200).json(favoriteContent);
+        // console.log("favoriteContent", favoriteContent)
+        // return res.status(200).json(favoriteContent);
+        // Supprimer les doublons en utilisant un ensemble
+        const uniqueFavoriteContent = Array.from(new Set(favoriteContent.map(media => media.id)))
+            .map(id => favoriteContent.find(media => media.id === id));
+
+        console.log("uniqueFavoriteContent", uniqueFavoriteContent);
+        return res.status(200).json(uniqueFavoriteContent);
     } catch (error) {
         console.error(error);
         return res.status(400).end();

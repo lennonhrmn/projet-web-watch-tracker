@@ -14,7 +14,7 @@ const PhotoALaUne = ({ category } : PhotoALaUneProps) => {
 
     const handleInfoClick = () => {
         router.push({
-          pathname: "/content",
+          pathname: `/content${categoryMAJ}`,
           query: { id: data.key, type: categoryMAJ}
         });
       };

@@ -1,12 +1,12 @@
 import Input from "@/components/Input";
 import React, { useCallback, useState } from "react";
 import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-
+import { FaCircleArrowLeft } from "react-icons/fa6";
+import { set } from "lodash";
 
 const Auth = () => {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -16,27 +16,107 @@ const Auth = () => {
   const [variant, setVariant] = useState("login");
   const [etape1, setEtape1] = useState(true);
 
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [loginError, setLoginError] = useState("");
+
   const toggleVariant = useCallback(() => {
     setVariant((currentVariant) =>
       currentVariant === "login" ? "signup" : "login"
     );
+    setLoginError("");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setEmail("");
+    setPassword("");
+    setPasswordConfirmation("");
   }, []);
+
+  const validateStep1 = () => {
+    let isValid = true;
+
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    if (
+      email.length <= 4 ||
+      !email.match(/@/g) ||
+      !email.includes(".") ||
+      email.indexOf("@") <= 0 ||
+      email.lastIndexOf(".") <= email.indexOf("@") + 1 ||
+      email.lastIndexOf(".") >= email.length - 1
+    ) {
+      setEmailError("Email must be at least 5 characters long, contain '@'");
+      isValid = false;
+    }
+
+    if (password.length <= 7) {
+      setPasswordError("Password must be at least 8 characters long");
+      isValid = false;
+    } else if (!password.match(/[A-Z]/g)) {
+      setPasswordError("Password must contain at least one uppercase letter");
+      isValid = false;
+    } else if (!password.match(/[a-z]/g)) {
+      setPasswordError("Password must contain at least one lowercase letter");
+      isValid = false;
+    } else if (!password.match(/[0-9]/g)) {
+      setPasswordError("Password must contain at least one digit");
+      isValid = false;
+    } else if (!password.match(/[^a-zA-Z0-9]/g)) {
+      setPasswordError("Password must contain at least one special character");
+      isValid = false;
+    }
+
+    if (password !== passwordConfirmation) {
+      setConfirmPasswordError("Passwords do not match");
+      isValid = false;
+    }
+
+    return isValid;
+  };
 
   const login = useCallback(async () => {
     try {
-      await signIn("credentials", {
+      // Réinitialiser les messages d'erreur
+      setEmailError("");
+      setPasswordError("");
+      setConfirmPasswordError("");
+      setLoginError("");
+
+      const result = await signIn("credentials", {
+        redirect: false,
         email,
         password,
-        callbackUrl: "/library",
       });
 
+      if ((result as { error: string }).error) {
+        setLoginError("Wrong email or password");
+        setEmail("");
+        setPassword("");
+      } else {
+        // Rediriger vers la bibliothèque après une connexion réussie
+        window.location.href = "/library";
+      }
     } catch (error) {
       console.error(error);
+      setLoginError("An unexpected error occurred");
     }
   }, [email, password]);
 
   const register = useCallback(async () => {
     try {
+      // Réinitialiser les messages d'erreur
+      setEmailError("");
+      setPasswordError("");
+      setConfirmPasswordError("");
+
+      if (!validateStep1()) {
+        return;
+      }
+
       await axios.post("/api/register", {
         email,
         password,
@@ -47,8 +127,22 @@ const Auth = () => {
       login();
     } catch (error) {
       console.error(error);
+      // Mettre à jour les messages d'erreur
+      setEmailError("Invalid email");
+      setPasswordError("Invalid password");
+      setConfirmPasswordError("Invalid password");
     }
-  }, [email, password, firstName, lastName, login]);
+  }, [email, password, passwordConfirmation, firstName, lastName, login]);
+
+  const handleBackButtonClick = () => {
+    console.log("Back button clicked");
+    setEmail("");
+    setPassword("");
+    setVariant("login");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+  };
 
   return (
     <div
@@ -58,7 +152,14 @@ const Auth = () => {
         filter: "brightness(0.8)",
       }}
     >
-      <div className="text-center  w-80 p-10 text-white bg-black bg-opacity-50 p-4 rounded-lg">
+      {variant == "signup" && (
+        <FaCircleArrowLeft
+          size={40}
+          className="relative mr-2 mb-64 z-10 text-white cursor-pointer"
+          onClick={handleBackButtonClick}
+        />
+      )}
+      <div className="text-center w-80 text-white bg-black bg-opacity-50 p-4 rounded-lg">
         <img
           src="/images/logo/logo.jpg"
           alt="Logo"
@@ -68,16 +169,17 @@ const Auth = () => {
           {variant === "login" ? "Sign in" : "Create an account"}
         </h1>
         <form>
-          <div className="mb-7 space-y-4">
+          <div className="mb-5 space-y-2">
             {variant === "login" || etape1 ? (
               <>
                 <Input
                   id="email"
                   label="Email"
-                  type="Email"
+                  type="email"
                   onChange={(ev: any) => setEmail(ev.target.value)}
                   value={email}
                 />
+                {emailError && <div className="text-xs text-red-500">{emailError}</div>}
                 <Input
                   id="password"
                   label="Password"
@@ -85,29 +187,43 @@ const Auth = () => {
                   onChange={(ev: any) => setPassword(ev.target.value)}
                   value={password}
                 />
+                {passwordError && (
+                  <div className="text-xs text-red-500">{passwordError}</div>
+                )}
+                {loginError && (
+                  <div className="text-xs text-red-500">{loginError}</div>
+                )}
                 {variant === "signup" && (
-                  <Input
-                    id="confirmPassword"
-                    label="Confirm Password"
-                    type="password"
-                    onChange={(ev: any) => setPasswordConfirmation(ev.target.value)}
-                    // verifyPassword(ev.target.value)} à faire
-                    value={passwordConfirmation}
-                  />
+                  <div>
+                    <Input
+                      id="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                      onChange={(ev: any) =>
+                        setPasswordConfirmation(ev.target.value)
+                      }
+                      value={passwordConfirmation}
+                    />
+                    {confirmPasswordError && (
+                      <div className="text-xs text-red-500">
+                        {confirmPasswordError}
+                      </div>
+                    )}
+                  </div>
                 )}
               </>
             ) : (
               <>
                 <Input
                   id="firstName"
-                  label="FirstName"
+                  label="First Name"
                   type="text"
                   onChange={(ev: any) => setFirstName(ev.target.value)}
                   value={firstName}
                 />
                 <Input
                   id="lastName"
-                  label="LastName"
+                  label="Last Name"
                   type="text"
                   onChange={(ev: any) => setLastName(ev.target.value)}
                   value={lastName}
@@ -118,17 +234,17 @@ const Auth = () => {
 
           {variant === "login" ? (
             <div>
-            <button
-              onClick={(ev) => {
-                ev.preventDefault();
-                login();
-              }}
-              type="submit"
-              className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
-            >
-              Sign in
-            </button>
-            <div className="flex flex-row items-center gap-4 mt-5 justify-center">
+              <button
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  login();
+                }}
+                type="submit"
+                className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+              >
+                Sign in
+              </button>
+              {/* <div className="flex flex-row items-center gap-4 mt-5 justify-center">
               <div 
               onClick={() => signIn("google", { callbackUrl: "/library" })}
               className="
@@ -145,13 +261,15 @@ const Auth = () => {
               ">
                 <FcGoogle size={30}/>
               </div>
-            </div>
+            </div> */}
             </div>
           ) : etape1 ? (
             <button
               onClick={(ev) => {
                 ev.preventDefault();
-                setEtape1(false);
+                if (validateStep1()) {
+                  setEtape1(false);
+                }
               }}
               type="submit"
               className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
@@ -162,7 +280,7 @@ const Auth = () => {
             <button
               type="submit"
               onClick={(ev) => {
-                ev.preventDefault(); 
+                ev.preventDefault();
                 register();
               }}
               className="w-full px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
@@ -188,6 +306,6 @@ const Auth = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Auth;

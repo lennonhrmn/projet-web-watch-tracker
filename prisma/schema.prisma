@@ -43,7 +43,7 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   userId    String   @db.ObjectId
-  contentId String   @db.ObjectId
+  contentId String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

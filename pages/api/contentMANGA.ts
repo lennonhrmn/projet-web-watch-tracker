@@ -35,7 +35,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
                 chapters
                 volumes
-                
                 countryOfOrigin
                 source(version:3)
                 updatedAt
@@ -48,7 +47,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
                 bannerImage
                 genres
-                popularity
                 averageScore
                 favourites
                 isAdult

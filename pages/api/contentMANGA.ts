@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query;
 
     var query: string = `
-        query($id: Int) {  
+        query($id: Int) {
             Media(id: $id, type:MANGA) {
                 type
                 status(version:2)
@@ -35,6 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
                 chapters
                 volumes
+                
                 countryOfOrigin
                 source(version:3)
                 updatedAt
@@ -51,11 +52,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 averageScore
                 favourites
                 isAdult
-                nextAiringEpisode {
-                    airingAt
-                    timeUntilAiring
-                    episode
-                }
             }
         }
     `;

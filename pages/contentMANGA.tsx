@@ -18,18 +18,18 @@ const ContentPage = () => {
     const [expanded, setExpanded] = useState(false);
     const { data: content, isLoading } = useContent(id as string ?? '', type as string ?? '');
     const [isMounted, setIsMounted] = useState(false);
-    const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
-    const [readEpisodes, setReadEpisodes] = useState<Set<number>>(new Set()); // Liste des épisodes lus
+    const [selectedChapters, setSelectedChapters] = useState<number | null>(null);
+    const [readChapters, setReadChapters] = useState<Set<number>>(new Set()); // Liste des épisodes lus
 
-    const handleSaveEpisode = () => {
-        if (selectedEpisode !== null) {
-            const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
-            for (let i = 1; i <= selectedEpisode; i++) {
-                newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
+    const handleSaveChapters = () => {
+        if (selectedChapters !== null) {
+            const newChapters = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
+            for (let i = 1; i <= selectedChapters; i++) {
+                newChapters.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
             }
-            setReadEpisodes(prevEpisodes => new Set([...Array.from(prevEpisodes), ...Array.from(newEpisodes)])); // Ajouter les nouveaux épisodes à l'ensemble existant
+            setReadChapters(prevChapters => new Set([...Array.from(prevChapters), ...Array.from(newChapters)])); // Ajouter les nouveaux épisodes à l'ensemble existant
         } else {
-            console.log("No episode selected");
+            console.log("No Chapters selected");
         }
     };
 
@@ -53,7 +53,8 @@ const ContentPage = () => {
     const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favourites, 
     countryOfOrigin, sources, trailer, studios } = content ?? 
     { title: { english: '', romaji: '' }, description: '', genres: [], status: '', chapters: '', volumes: '', startDate: { year: '', month: '', day: ''}, 
-    coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', popularity: '', favourites:'', countryOfOrigin : '', sources: '', trailer: { site: '', thumbnail: ''}, studios: { node: { name: ''}}};
+    coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', popularity: '', favourites:'', countryOfOrigin : '', sources: '', 
+    trailer: { site: '', thumbnail: ''}, studios: { node: { name: ''}}};
 
     const truncatedDescription = (description ?? '').length > 200 && !expanded 
         ? `${(description ?? '').slice(0, 200)}...` 
@@ -62,6 +63,8 @@ const ContentPage = () => {
     const showRomaji = title.romaji && title.romaji !== title.english;
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
+
+    console.log("content", content);
 
     function formatTime(seconds: any) {
         const days = Math.floor(seconds / (24 * 60 * 60));
@@ -134,10 +137,10 @@ const ContentPage = () => {
                             <div className='flex flex-row space-x-3'>
                             <DropdownList
                                 episodes={chapters} 
-                                onSelectEpisode={setSelectedEpisode}
-                                savedEpisodes={readEpisodes} 
+                                onSelectEpisode={setSelectedChapters}
+                                savedEpisodes={readChapters} 
                             />
-                              <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveEpisode} />
+                              <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveChapters} />
                             </div>
                         </div>
                     </div>
@@ -158,20 +161,20 @@ const ContentPage = () => {
                         <p className='text-white text-xs'>Status - { status }</p>
                     </div>
                     </div>
-                    {/* {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
+                    {/* {nextAiringChapters && nextAiringChapters.timeUntilAiring && (
                         <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                            <p className='text-white text-xs'>Next episode - { formatTime(nextAiringEpisode.timeUntilAiring) }</p>
+                            <p className='text-white text-xs'>Next Chapters - { formatTime(nextAiringChapters.timeUntilAiring) }</p>
                         </div>
                     )} */}
                     {/* {type === 'ANIME' && (
-                        <p className='text-white text-1xl'>Number of episodes - { content?.episodes }</p>
+                        <p className='text-white text-1xl'>Number of Chapters - { content?.Chapters }</p>
                     )}
                     {type === 'MANGA' && (
                         <p className='text-white text-1xl'>Number of chapters - { content?.chapters }</p>
                     )} */}
                     {/* <p className='text-white text-1xl'>Last updated - { updatedAt }</p> */}
-                    {/* {nextAiringEpisode && nextAiringEpisode.episode && (
-                        <p className='text-white text-1xl'>Next Episode - { nextAiringEpisode.episode }</p>)} */}
+                    {/* {nextAiringChapters && nextAiringChapters.Chapters && (
+                        <p className='text-white text-1xl'>Next Chapters - { nextAiringChapters.Chapters }</p>)} */}
                     {/* <p className='text-white text-1xl'>Sources - { sources } (fonctionne pas ?)</p> */}
                     {/* <p className='text-white text-1xl'>Trailer link - { trailer.site } (pas terrible)</p> */}
                     {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}

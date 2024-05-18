@@ -55,6 +55,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const response = await fetch(url, options);
     const data = await response.json();
 
+    if (data.errors) {
+      console.error('AniList error:', data.errors);
+      return res.status(500).json({ message: data.errors[0].message });
+    }
+
+    const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+    console.log(`Nombre de requêtes restantes : ${rateLimitRemaining}`);
+
     return res.status(200).json(data.data.Page.media);
   } catch (error) {
     console.error('error', error);

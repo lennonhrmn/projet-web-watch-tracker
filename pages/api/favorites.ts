@@ -31,8 +31,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         // Supprimer les doublons en utilisant un ensemble
         const uniqueFavoriteContent = Array.from(new Set(favoriteContent.map(media => media.id)))
             .map(id => favoriteContent.find(media => media.id === id));
-
-        console.log("uniqueFavoriteContent", uniqueFavoriteContent);
         return res.status(200).json(uniqueFavoriteContent);
     } catch (error) {
         console.error(error);

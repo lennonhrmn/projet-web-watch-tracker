@@ -60,8 +60,6 @@ const Library = () => {
         }
     }, [selectedCategory]);
 
-    console.log('fav',favorites)
-
     return (
         <div className="bg-black">
             <Navbar/>

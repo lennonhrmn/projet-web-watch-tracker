@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 
 const useSearch = (query: string) => {
     const [results, setResults] = useState<any[]>([]);
+    const [prevQueryLength, setPrevQueryLength] = useState<number>(0);
+
 
     useEffect(() => {
         const fetchData = async () => {
-            if (query.length >= 0) {
+            if (query.length >= 2 && query.length % 2 === 0 && query.length >= prevQueryLength) {
                 try {
                     const response = await fetch(`/api/search?query=${query}`);
                     const data = await response.json();
@@ -17,9 +19,8 @@ const useSearch = (query: string) => {
                 } catch (error) {
                     console.error(error);
                 }
-            } else {
-                setResults([]);
             }
+            setPrevQueryLength(query.length);
         };
 
         fetchData();

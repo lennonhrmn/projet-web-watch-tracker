@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
-import { use } from "react";
 
 const useContent = (id: string, type: string) => {
 

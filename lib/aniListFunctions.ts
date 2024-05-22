@@ -57,6 +57,17 @@ async function getFavorites(favoriteIds: string[], category: string): Promise<an
     try {
         const response = await fetch(url, options);
         const data = await response.json();
+
+        if (data.errors) {
+            console.error("AniList API returned errors:", data.errors);
+            return [];
+        }
+
+        if (!data.data || !data.data.Page || !data.data.Page.media) {
+            console.error("AniList API returned unexpected response structure:", data);
+            return [];
+        }
+
         const cacheData = await prismadb.cacheData.findUnique({
             where: { key: key }
         });

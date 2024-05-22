@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ message: 'Internal Server Error' });
         }
     } else if (req.method === 'GET') {
-        // console.log("user, content, lastEpisode", userId, contentId, lastEpisode);
+        console.log("user, content, lastEpisode", userId, contentId, lastEpisode);
         try {
             const favorite = await prisma.favorite.findFirst({
                 where: {
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ message: 'Favorite not found' });
             }
 
-            // console.log("fav get", favorite);
+            console.log("fav get", favorite);
 
             res.status(200).json(favorite);
         } catch (error) {

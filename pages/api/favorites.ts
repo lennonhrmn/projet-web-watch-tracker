@@ -34,21 +34,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
         });
 
+        if (!favorites.length) {
+            return res.status(200).json([]);
+        }
+
         // Récupérer les IDs de contenu favori
         const favoriteIds = favorites.map(favorite => favorite.contentId);
 
-        // // Récupérer tous les cacheData
-        // const allCacheData = await prismadb.cacheData.findMany();
+        const favoritesData = await aniListFunction.getFavorites(favoriteIds, category);
 
-        // const favoriteContent = allCacheData
-        //     .filter(cacheData => !cacheData.key.includes("sort:POPULARITY") && !cacheData.key.includes("sort:TRENDING"))
-        //     .filter(cacheData => category !== undefined && cacheData.key.includes(category.toUpperCase()))
-        //     .map(cacheData => JSON.parse(cacheData.value))
-        //     .filter(media => favoriteIds.includes(media.id.toString()))
-        // // Supprimer les doublons en utilisant un ensemble
-        // const uniqueFavoriteContent = Array.from(new Set(favoriteContent.map(media => media.id)))
-        //     .map(id => favoriteContent.find(media => media.id === id));
-        return res.status(200).json(await aniListFunction.getFavorites(favoriteIds, category));
+        if (!favoritesData) {
+            return res.status(500).json({ error: 'Failed to retrieve favorites data' });
+        }
+
+        return res.status(200).json(favoritesData);
     } catch (error) {
         console.error(error);
         return res.status(400).end();

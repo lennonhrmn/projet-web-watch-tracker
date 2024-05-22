@@ -17,6 +17,8 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { useSession } from 'next-auth/react';
 import useFavorite from '@/hooks/useFavorite';
 import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
+import useDeleteComment from '@/hooks/useDeleteComment';
+import { MdDelete } from 'react-icons/md';
 
 interface Comment {
     id: String
@@ -35,31 +37,27 @@ const ContentPage = () => {
     const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
     const [comments, setComments] = useState<Comment[]>([]); // Nouveau state pour stocker les commentaires
     const [commentContent, setCommentContent] = useState('');
+    const { deleteComment } = useDeleteComment();
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
     const router = useRouter();
     let { id, type } = router.query;
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
-    const { data: content, isLoading } = useContent(id as string, type as string);
+    const { data: content } = useContent(id as string, type as string);
     const { saveEpisode } = useSaveEpisode();
     const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string); // Récupérer les favoris de l'utilisateur
+    const isAdmin = user?.isAdmin;
 
     // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
     useEffect(() => {
         if (userFavorites && userFavorites.some((favorite: { id: number }) => favorite.id === parseInt(id as string))) {
-            console.log("I am a favorite");
             setIsFavorite(true);
         } else {
             setIsFavorite(false);
         }
     }, [userFavorites, id]);
-
-    // Fonction appelée lorsque le bouton FavoriteButton est cliqué
-    const handleFavoriteButtonClick = () => {
-        setIsFavorite(!isFavorite); // Inverser l'état de la variable d'état isFavorite
-    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -76,8 +74,15 @@ const ContentPage = () => {
     useEffect(() => {
         if (lastEpisode) {
             setSelectedEpisode(lastEpisode);
+            // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
+            const newEpisodes = new Set<number>();
+            for (let i = 1; i <= lastEpisode; i++) {
+                newEpisodes.add(i);
+            }
+            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
         }
     }, [lastEpisode]);
+
 
     // Connexion au serveur de sockets
     useEffect(() => {
@@ -105,6 +110,11 @@ const ContentPage = () => {
             if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
         };
     }, []);
+
+    // Fonction appelée lorsque le bouton FavoriteButton est cliqué
+    const handleFavoriteButtonClick = () => {
+        setIsFavorite(!isFavorite); // Inverser l'état de la variable d'état isFavorite
+    };
 
     const handleCommentSection = () => {
         setCommentsOpen(!commentsOpen); // Inverser l'état de la section des commentaires
@@ -136,13 +146,28 @@ const ContentPage = () => {
         setCommentContent(event.target.value);
     };
 
+    // Fonction pour mettre à jour l'état local des commentaires après la suppression d'un commentaire
+    const updateCommentsAfterDelete = (deletedCommentId: string) => {
+        setComments(prevComments => prevComments.filter(comment => comment.id !== deletedCommentId));
+    };
+
+    // Fonction pour supprimer un commentaire, seulement accessible pour les administrateurs
+    const handleDeleteComment = async (commentId: string) => {
+        try {
+            await deleteComment(commentId);
+            updateCommentsAfterDelete(commentId);
+        } catch (error) {
+            console.error('Failed to delete comment', error);
+        }
+    };
+
     const handleSaveEpisode = async () => {
         if (selectedEpisode !== null && session?.user) {
             const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
             for (let i = 1; i <= selectedEpisode; i++) {
                 newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
             }
-            setReadEpisodes(prevEpisodes => new Set([...Array.from(prevEpisodes), ...Array.from(newEpisodes)])); // Ajouter les nouveaux épisodes à l'ensemble existant
+            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
 
             try {
                 await saveEpisode(session.user.id, id as string, selectedEpisode);
@@ -186,11 +211,13 @@ const ContentPage = () => {
         if (episodeNumber === null) {
             return;
         }
-        const newEpisodes = new Set<number>();
-        for (let i = 1; i <= episodeNumber; i++) {
-            newEpisodes.add(i);
-        }
-        setReadEpisodes(prevEpisodes => new Set([...Array.from(prevEpisodes), ...Array.from(newEpisodes)]));
+        setReadEpisodes(prevEpisodes => {
+            const newEpisodes = new Set<number>(Array.from(prevEpisodes));
+            for (let i = 1; i <= episodeNumber; i++) {
+                newEpisodes.add(i);
+            }
+            return newEpisodes;
+        });
     };
 
     const handleBackButtonClick = () => {
@@ -312,14 +339,24 @@ const ContentPage = () => {
                     </div>
                     {commentsOpen && (
                         <div>
-                            <ul>
-                                {comments.map((comment: Comment, index: number) => (
-                                    <li key={index}>
-                                        <p className='text-white'>By: {comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"}</p>
-                                        <p className='text-white'>{comment.content}</p>
-                                    </li>
-                                ))}
-                            </ul>
+                            {isAdmin ? (
+                                <ul>
+                                    {comments.map((comment: Comment, index: number) => (
+                                        <li key={index} className='flex'>
+                                            <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
+                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <ul>
+                                    {comments.map((comment: Comment, index: number) => (
+                                        <li key={index}>
+                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                             <form onSubmit={handleSubmitComment}>
                                 <textarea
                                     className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"

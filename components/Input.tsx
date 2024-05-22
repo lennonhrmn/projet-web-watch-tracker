@@ -6,6 +6,7 @@ interface InputProps {
   value: string;
   label: string;
   type?: string;
+  autoComplete?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -14,6 +15,7 @@ const Input: React.FC<InputProps> = ({
   value,
   label,
   type = "text",
+  autoComplete,
 }) => {
   const [inputHasValue, setInputHasValue] = useState(false);
 
@@ -44,6 +46,7 @@ const Input: React.FC<InputProps> = ({
           focus:ring-0
         "
         placeholder=" "
+        autoComplete={autoComplete}
       />
       <label
         className={`

@@ -7,6 +7,7 @@ interface InputProps {
   label: string;
   type?: string;
   children?: React.ReactNode;
+  autoComplete?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -15,7 +16,8 @@ const Input: React.FC<InputProps> = ({
   value,
   label,
   type = "text",
-  children
+  children,
+  autoComplete,
 }) => {
   const [inputHasValue, setInputHasValue] = useState(false);
 
@@ -41,11 +43,12 @@ const Input: React.FC<InputProps> = ({
           text-md
           text-white
           bg-neutral-700
-          apparence-none
+          appearance-none
           focus:outline-none
           focus:ring-0
         "
         placeholder=" "
+        autoComplete={autoComplete}
       />
       <label
         className={`
@@ -68,7 +71,7 @@ const Input: React.FC<InputProps> = ({
       >
         {label}
       </label>
-      {children && ( 
+      {children && (
         <div className="absolute inset-y-0 right-0 flex items-center pr-2">
           {children}
         </div>

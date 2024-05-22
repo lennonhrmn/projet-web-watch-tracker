@@ -1,50 +1,48 @@
 import axios from "axios";
-import React, { useCallback, useMemo } from "react";
-import useCurrentUser from "@/hooks/useCurrentUser";
+import React, { useCallback } from "react";
 import useFavorite from "@/hooks/useFavorite";
 import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
-import { getSession, useSession } from "next-auth/react";
-import { mutate } from "swr";
+import { useSession } from "next-auth/react";
+import favorite from "@/pages/api/favorite";
 
 interface FavoriteButtonProps {
     contentId: string;
-    type: string
+    type: string;
 }
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
-    const { data : currentSession } = useSession();
-    const { mutate: mutateFavorites } = useFavorite(type);
-    const { data: currentUser, mutate } = useCurrentUser();
-    
+    const { data: currentSession } = useSession();
+    const { data: favorites, mutate: mutateFavorites } = useFavorite(type);
 
-    const isFavorite = useMemo(() => {
-        const list = currentUser?.favoriteIds || [];
+    let favoriteContent;
 
-        return list.includes(contentId);
-    }, [currentUser, contentId]);
+    if (favorites) {
+        favoriteContent = favorites.find((favorite: { id: any }) => favorite.id == contentId)
+    }
+
+    const isFavorite = favoriteContent !== undefined;
 
     const toggleFavorite = useCallback(async () => {
-        let response;
         try {
+            let response;
             if (isFavorite) {
-                response = await axios.delete("/api/favorite", { data: { contentId, session : currentSession }});
+                response = await axios.delete("/api/favorite", { data: { contentId, session: currentSession } });
             } else {
-                response = await axios.post("/api/favorite", { contentId, session : currentSession });
+                response = await axios.post("/api/favorite", { contentId, session: currentSession });
             }
-        
-            const updatedFavoriteIds = response?.data?.favoriteIds;
-        
-            mutate({ ...currentUser, favoriteIds: updatedFavoriteIds });
-        
+
+            // Mettre à jour les favoris après l'action
             mutateFavorites();
+
         } catch (error) {
             console.error('An error occurred while toggling the favorite status:', error);
-        }}, [isFavorite, contentId, currentUser, mutate, mutateFavorites])
+        }
+    }, [isFavorite, contentId, currentSession, mutateFavorites]);
 
     const Icon = isFavorite ? AiOutlineCheck : AiOutlinePlus;
 
     return (
-        <div 
+        <div
             onClick={toggleFavorite}
             className="
             cursor-pointer
@@ -59,7 +57,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
             transition
             hover:border-neutral-300
             ">
-            <Icon size={15} className="text-white"/>
+            <Icon size={15} className="text-white" />
         </div>
     );
 }

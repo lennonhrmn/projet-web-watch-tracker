@@ -46,7 +46,6 @@ io.on('connection', async socket => {
     );
     // restoreComments = exclude(restoreComments, ['hashedPassword']);
     io.to(socket.id).emit("restoreComments", restoreComments);
-    console.log('restoreComments', restoreComments);
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
@@ -54,7 +53,6 @@ io.on('connection', async socket => {
 
     socket.on('newComment', async newComment => {
         try {
-            console.log('newComment', newComment);
             // Enregistrer le nouveau commentaire dans la base de données avec Prisma
             await prisma.comment.create({
                 data: {

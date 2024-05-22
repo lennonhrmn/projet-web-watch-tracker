@@ -13,6 +13,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { id } = req.query;
 
+
     var query: string = `
         query($id: Int) {  
             Media(id: $id, type:ANIME) {

@@ -13,33 +13,62 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === 'POST') {
 
-        const user = await prismadb.user.update({
+        // Check if the favorite already exists
+        const existingFavorite = await prismadb.favorite.findFirst({
             where: {
-                email: currentUser?.email || '',
-            },
-            data: {
-                favoriteIds: {
-                    push: contentId.toString(),
-                }
-            }
-        })
-        return res.status(200).json(user);
-    }
-
-    if (req.method === 'DELETE') {
-
-        const updatedFavoriteIds = without(currentUser?.favoriteIds, contentId);
-
-        const updatedUser = await prismadb.user.update({
-            where: {
-                email: currentUser?.email || '',
-            },
-            data: {
-                favoriteIds: updatedFavoriteIds,
+                userId: currentUser.id,
+                contentId: contentId,
             }
         });
 
-        return res.status(200).json(updatedUser);
+        if (existingFavorite) {
+            return res.status(400).json({ error: 'Favorite already exists' });
+        }
+
+        // Create new favorite
+        await prismadb.favorite.create({
+            data: {
+                userId: currentUser.id,
+                contentId: contentId,
+                lastEpisode: 0,
+            }
+        });
+
+        // Fetch the updated favorites list
+        const updatedFavorites = await prismadb.favorite.findMany({
+            where: { userId: currentUser.id }
+        });
+        return res.status(200).json({ favorites: updatedFavorites });
+    }
+
+    if (req.method === 'DELETE') {
+        console.log("contentId and currentUser", contentId, currentUser)
+
+        // Find the favorite to delete
+        const favorite = await prismadb.favorite.findFirst({
+            where: {
+                userId: currentUser.id,
+                contentId: contentId,
+            }
+        });
+
+        if (!favorite) {
+            return res.status(404).json({ error: 'Favorite not found' });
+        }
+
+        // Delete the favorite
+        await prismadb.favorite.delete({
+            where: {
+                id: favorite.id,
+            }
+        });
+
+        // Fetch the updated favorites list
+        const updatedFavorites = await prismadb.favorite.findMany({
+            where: { userId: currentUser.id }
+        });
+
+        return res.status(200).json({ favorites: updatedFavorites });
     }
 
     return res.status(405).end();

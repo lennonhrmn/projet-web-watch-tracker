@@ -4,7 +4,6 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { FaCircleArrowLeft } from "react-icons/fa6";
-import { set } from "lodash";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -178,6 +177,7 @@ const Auth = () => {
                   type="email"
                   onChange={(ev: any) => setEmail(ev.target.value)}
                   value={email}
+                  autoComplete="email"
                 />
                 {emailError && <div className="text-xs text-red-500">{emailError}</div>}
                 <Input
@@ -186,6 +186,7 @@ const Auth = () => {
                   type="password"
                   onChange={(ev: any) => setPassword(ev.target.value)}
                   value={password}
+                  autoComplete="current-password"
                 />
                 {passwordError && (
                   <div className="text-xs text-red-500">{passwordError}</div>
@@ -203,6 +204,7 @@ const Auth = () => {
                         setPasswordConfirmation(ev.target.value)
                       }
                       value={passwordConfirmation}
+                      autoComplete="new-password"
                     />
                     {confirmPasswordError && (
                       <div className="text-xs text-red-500">
@@ -220,6 +222,7 @@ const Auth = () => {
                   type="text"
                   onChange={(ev: any) => setFirstName(ev.target.value)}
                   value={firstName}
+                  autoComplete="given-name"
                 />
                 <Input
                   id="lastName"
@@ -227,6 +230,7 @@ const Auth = () => {
                   type="text"
                   onChange={(ev: any) => setLastName(ev.target.value)}
                   value={lastName}
+                  autoComplete="family-name"
                 />
               </>
             )}

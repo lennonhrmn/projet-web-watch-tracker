@@ -12,8 +12,11 @@ import { FaCommentAlt, FaHeart, FaRegCheckCircle } from "react-icons/fa";
 import DropdownList from '@/components/DropdownList';
 import io, { Socket } from 'socket.io-client'; // Importation de socket.io-client
 import useCurrentUser from '@/hooks/useCurrentUser';
-import { Input } from 'postcss';
+import useSaveEpisode from '@/hooks/useSaveEpisode';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { useSession } from 'next-auth/react';
+import useFavorite from '@/hooks/useFavorite';
+import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
 
 interface Comment {
     id: String
@@ -25,21 +28,56 @@ interface Comment {
 }
 
 const ContentPage = () => {
-    const router = useRouter();
-    const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
-    let { id, type } = router.query;
-    if (Array.isArray(id)) {
-        id = id[0];
-    }
     const [expanded, setExpanded] = useState(false);
-    const { data: content, isLoading } = useContent(id as string ?? '', type as string ?? '');
     const [isMounted, setIsMounted] = useState(false);
-    const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
-    const [readEpisodes, setReadEpisodes] = useState<Set<number>>(new Set()); // Liste des épisodes lus
-    const [comments, setComments] = useState<Comment[]>([]); // Nouveau state pour stocker les commentaires
     const [commentsOpen, setCommentsOpen] = useState(false); // Variable d'état pour suivre si la section des commentaires est ouverte ou fermée
+    const [readEpisodes, setReadEpisodes] = useState<Set<number>>(new Set()); // Liste des épisodes lus
+    const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]); // Nouveau state pour stocker les commentaires
     const [commentContent, setCommentContent] = useState('');
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+    const router = useRouter();
+    let { id, type } = router.query;
+    const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
+    const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
+    const { data: content, isLoading } = useContent(id as string, type as string);
+    const { saveEpisode } = useSaveEpisode();
+    const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
+    const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
+    const { data: userFavorites } = useFavorite(type as string); // Récupérer les favoris de l'utilisateur
+
+    // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
+    useEffect(() => {
+        if (userFavorites && userFavorites.some((favorite: { id: number }) => favorite.id === parseInt(id as string))) {
+            console.log("I am a favorite");
+            setIsFavorite(true);
+        } else {
+            setIsFavorite(false);
+        }
+    }, [userFavorites, id]);
+
+    // Fonction appelée lorsque le bouton FavoriteButton est cliqué
+    const handleFavoriteButtonClick = () => {
+        setIsFavorite(!isFavorite); // Inverser l'état de la variable d'état isFavorite
+    };
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (router.isReady && isMounted && (!id || !type)) {
+            router.push('/library');
+        } else if (id && type) {
+            mutate(`api/content${type}?id=${id}`);
+        }
+    }, [id, mutate, router, isMounted, type]);
+
+    useEffect(() => {
+        if (lastEpisode) {
+            setSelectedEpisode(lastEpisode);
+        }
+    }, [lastEpisode]);
 
     // Connexion au serveur de sockets
     useEffect(() => {
@@ -98,30 +136,24 @@ const ContentPage = () => {
         setCommentContent(event.target.value);
     };
 
-    const handleSaveEpisode = () => {
-        if (selectedEpisode !== null) {
+    const handleSaveEpisode = async () => {
+        if (selectedEpisode !== null && session?.user) {
             const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
             for (let i = 1; i <= selectedEpisode; i++) {
                 newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
             }
             setReadEpisodes(prevEpisodes => new Set([...Array.from(prevEpisodes), ...Array.from(newEpisodes)])); // Ajouter les nouveaux épisodes à l'ensemble existant
+
+            try {
+                await saveEpisode(session.user.id, id as string, selectedEpisode);
+                console.log('Episode saved successfully');
+            } catch (error) {
+                console.error('Failed to save episode', error);
+            }
         } else {
-            console.log("No episode selected");
+            console.log("No episode selected or user not logged in");
         }
     };
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (router.isReady && id === undefined && isMounted) {
-            router.push('/library');
-        } else {
-            mutate(`api/content${type}?id=${id}`);
-        }
-    }, [id, mutate, router, isMounted]);
-
 
     const toggleDescription = () => {
         setExpanded(!expanded);
@@ -149,8 +181,19 @@ const ContentPage = () => {
         return `${days} days ${hours} hours`;
     }
 
+    const handleEpisodeClick = (episodeNumber: number | null) => {
+        setSelectedEpisode(episodeNumber);
+        if (episodeNumber === null) {
+            return;
+        }
+        const newEpisodes = new Set<number>();
+        for (let i = 1; i <= episodeNumber; i++) {
+            newEpisodes.add(i);
+        }
+        setReadEpisodes(prevEpisodes => new Set([...Array.from(prevEpisodes), ...Array.from(newEpisodes)]));
+    };
+
     const handleBackButtonClick = () => {
-        console.log("Back button clicked");
         router.back();
     };
 
@@ -204,22 +247,25 @@ const ContentPage = () => {
                                         </>
                                     )}
                                 </button>
-                                <div className='mt-1'>
-                                    <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={''} />
+                                <div className='mt-1.5' onClick={handleFavoriteButtonClick}>
+                                    <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"ANIME"} />
                                 </div>
                                 <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
                                     <p className='text-white text-xs'>{favourites}</p>
                                     <FaHeart className='text-red-500 text-1xl' />
                                 </div>
                                 <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                <div className='flex flex-row space-x-3'>
-                                    <DropdownList
-                                        episodes={(episodes !== undefined && episodes !== null) ? episodes : nextAiringEpisode.episode - 1}
-                                        onSelectEpisode={setSelectedEpisode}
-                                        savedEpisodes={readEpisodes}
-                                    />
-                                    <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveEpisode} />
-                                </div>
+                                {isFavorite && (
+                                    <div className='flex flex-row space-x-3'>
+                                        <DropdownList
+                                            episodes={(episodes !== undefined && episodes !== null) ? episodes : nextAiringEpisode.episode - 1}
+                                            onSelectEpisode={handleEpisodeClick}
+                                            savedEpisodes={readEpisodes}
+                                            selectedEpisode={selectedEpisode}
+                                        />
+                                        <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveEpisode} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {genres && (

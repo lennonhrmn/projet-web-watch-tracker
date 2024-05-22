@@ -9,7 +9,7 @@ import ReactCountryFlag from "react-country-flag";
 import { FaCircleArrowLeft } from "react-icons/fa6";
 import FavoriteButton from '@/components/FavoriteButton';
 import { FaHeart, FaRegCheckCircle } from "react-icons/fa";
-import DropdownList from '@/components/DropdownList'; 
+import DropdownList from '@/components/DropdownList';
 
 
 const ContentPage = () => {
@@ -38,28 +38,31 @@ const ContentPage = () => {
     }, []);
 
     useEffect(() => {
-        if (router.isReady && id === undefined && isMounted) {
+        if (router.isReady && isMounted && (!id || !type)) {
             router.push('/library');
         } else {
+            console.log("id before mutate", id, type);
             mutate(`api/content${type}?id=${id}`);
         }
-    }, [id, mutate, router, isMounted]);
+    }, [id, mutate, router, isMounted, type]);
 
 
     const toggleDescription = () => {
         setExpanded(!expanded);
     };
 
-    const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favourites, 
-    countryOfOrigin, sources, trailer, studios } = content ?? 
-    { title: { english: '', romaji: '' }, description: '', genres: [], status: '', chapters: '', volumes: '', startDate: { year: '', month: '', day: ''}, 
-    coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', popularity: '', favourites:'', countryOfOrigin : '', sources: '', 
-    trailer: { site: '', thumbnail: ''}, studios: { node: { name: ''}}};
+    const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favourites,
+        countryOfOrigin, sources, trailer, studios } = content ??
+        {
+            title: { english: '', romaji: '' }, description: '', genres: [], status: '', chapters: '', volumes: '', startDate: { year: '', month: '', day: '' },
+            coverImage: { large: '', extraLarge: '' }, bannerImage: '', updatedAt: '', popularity: '', favourites: '', countryOfOrigin: '', sources: '',
+            trailer: { site: '', thumbnail: '' }, studios: { node: { name: '' } }
+        };
 
-    const truncatedDescription = (description ?? '').length > 200 && !expanded 
-        ? `${(description ?? '').slice(0, 200)}...` 
+    const truncatedDescription = (description ?? '').length > 200 && !expanded
+        ? `${(description ?? '').slice(0, 200)}...`
         : (description ?? '');
-    
+
     const showRomaji = title.romaji && title.romaji !== title.english;
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
@@ -80,14 +83,14 @@ const ContentPage = () => {
     return (
         <div className="">
             <Navbar />
-            <img src={bannerSrc} className='w-full h-auto top-0 left-0 absolute z-0 opacity-20'/>
-            <FaCircleArrowLeft 
-                size={40} 
+            <img src={bannerSrc} className='w-full h-auto top-0 left-0 absolute z-0 opacity-20' />
+            <FaCircleArrowLeft
+                size={40}
                 className='relative z-10 top-32 ml-5 text-white cursor-pointer'
-                onClick={handleBackButtonClick} 
+                onClick={handleBackButtonClick}
             />
             <div className='flex items-start absolute z-2'>
-                <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `}/>
+                <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
                 <div className={`${expanded ? 'relative ml-24 mt-20 z-3' : 'ml-24 mt-20'}`}>
                     <p className="
                         text-white
@@ -116,31 +119,31 @@ const ContentPage = () => {
                             <button className="bg-white text-white bg-opacity-30 rounded-md mt-1 mb-1 py-1 px-1 w-auto text-xs font-semibold flex flex-row items-center hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
                                 {expanded ? (
                                     <>
-                                        <CiUnread className='mr-1'/>
+                                        <CiUnread className='mr-1' />
                                         Read Less
                                     </>
                                 ) : (
                                     <>
-                                        <CiRead className='mr-1'/>
+                                        <CiRead className='mr-1' />
                                         Read More
                                     </>
                                 )}
                             </button>
                             <div className='mt-1'>
-                                <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={''}/>
+                                <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={'MANGA'} />
                             </div>
                             <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
-                                <p className='text-white text-xs'>{ favourites }</p>
-                                <FaHeart className='text-red-500 text-1xl'/>
+                                <p className='text-white text-xs'>{favourites}</p>
+                                <FaHeart className='text-red-500 text-1xl' />
                             </div>
                             <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
                             <div className='flex flex-row space-x-3'>
-                            <DropdownList
-                                episodes={chapters} 
-                                onSelectEpisode={setSelectedChapters}
-                                savedEpisodes={readChapters} 
-                            />
-                              <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveChapters} />
+                                <DropdownList
+                                    episodes={chapters}
+                                    onSelectEpisode={setSelectedChapters}
+                                    savedEpisodes={readChapters}
+                                />
+                                <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveChapters} />
                             </div>
                         </div>
                     </div>
@@ -154,12 +157,12 @@ const ContentPage = () => {
                         </div>
                     )}
                     <div className='flex'>
-                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                        <p className='text-white text-xs'>Release year - { startDate.year }</p>
-                    </div>
-                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
-                        <p className='text-white text-xs'>Status - { status }</p>
-                    </div>
+                        <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
+                            <p className='text-white text-xs'>Release year - {startDate.year}</p>
+                        </div>
+                        <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
+                            <p className='text-white text-xs'>Status - {status}</p>
+                        </div>
                     </div>
                     {/* {nextAiringChapters && nextAiringChapters.timeUntilAiring && (
                         <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>

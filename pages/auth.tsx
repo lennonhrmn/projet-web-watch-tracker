@@ -4,6 +4,8 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { FaCircleArrowLeft } from "react-icons/fa6";
+import Image from "next/image";
+
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -159,10 +161,12 @@ const Auth = () => {
         />
       )}
       <div className="text-center w-80 text-white bg-black bg-opacity-50 p-4 rounded-lg">
-        <img
+        <Image
           src="/images/logo/logo.jpg"
           alt="Logo"
           className="absolute top-0 left-0 m-4"
+          width={100}
+          height={50}
         />
         <h1 className="text-4xl mb-4 text-left font-bold">
           {variant === "login" ? "Sign in" : "Create an account"}

@@ -108,7 +108,7 @@ const ContentPage = () => {
         return () => {
             if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
         };
-    }, [id, user]);
+    }, [id, user, comments, socket]);
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {

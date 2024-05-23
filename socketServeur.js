@@ -18,6 +18,8 @@ const io = new Server(server, {
     },
 });
 
+console.log('Server started');
+
 
 io.on('connection', async socket => {
     console.log('User connected');

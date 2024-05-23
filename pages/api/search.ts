@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisme = new PrismaClient();
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'GET') {
     return res.status(405).end(); // Méthode non autorisée
   }
@@ -69,3 +69,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).end();
   }
 };
+
+export default handler;

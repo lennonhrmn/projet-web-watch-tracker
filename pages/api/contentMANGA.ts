@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method !== 'GET') {
         return res.status(405).end();
     }
@@ -111,3 +111,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
     }, 500); // Add a delay of 500ms before making the API request
 }
+
+export default handler;

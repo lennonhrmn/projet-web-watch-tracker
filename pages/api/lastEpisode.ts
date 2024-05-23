@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prismadb';
 import { getSession } from 'next-auth/react';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const session = await getSession({ req });
 
@@ -32,3 +32,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(405).json({ message: 'Method not allowed' });
     }
 }
+
+export default handler;

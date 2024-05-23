@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prismadb from "@/lib/prismadb";
 import { PrismaClient } from '@prisma/client';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'DELETE') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
@@ -21,3 +21,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ message: 'An error occurred while deleting the comment' });
     }
 }
+
+export default handler;

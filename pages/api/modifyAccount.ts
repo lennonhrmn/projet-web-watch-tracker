@@ -31,7 +31,7 @@ const validatePassword = (password: string) => {
     return true;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'PUT') {
         return res.status(405).end();
     }
@@ -96,3 +96,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).end();
     }
 }
+
+export default handler;

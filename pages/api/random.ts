@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import prisamdb from '@/lib/prismadb';
 import serveurAuth from '@/lib/serveurAuth';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'GET') {
         return res.status(405).end();
     }
@@ -37,3 +37,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).end();
     }
 }
+
+export default handler;

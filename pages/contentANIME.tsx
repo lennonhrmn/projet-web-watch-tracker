@@ -325,7 +325,7 @@ const ContentPage = () => {
                         {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}
                     </div>
                 </div>
-                <div className="comment-section">
+                <div className="w-[40%]">
                     <div className='flex flex-row space-x-2 mt-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md p-1 w-32 justify-center items-center'
                         onClick={handleCommentSection}>
                         <h2 className='text-white'>Comments</h2>

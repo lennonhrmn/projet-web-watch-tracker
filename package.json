@@ -8,7 +8,7 @@
     "dev:next": "next dev",
     "dev:sock": "node socketServeur.js",
     "build": "next build",
-    "start": "next start",
+    "start": "next start && node socketServeur.js",
     "lint": "next lint"
   },
   "dependencies": {

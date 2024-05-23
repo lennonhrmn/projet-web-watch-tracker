@@ -44,6 +44,7 @@ io.on('connection', async socket => {
     });
 
     socket.on('newComment', async newComment => {
+        console.log('newComment:', newComment);
         try {
             // Enregistrer le nouveau commentaire dans la base de données avec Prisma
             await prisma.comment.create({

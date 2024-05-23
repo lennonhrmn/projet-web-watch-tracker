@@ -1,5 +1,10 @@
 import prismadb from "@/lib/prismadb";
 
+const aniListFunctions = {
+    getFavorites,
+    getPopular,
+};
+
 async function getFavorites(favoriteIds: string[], category: string): Promise<any> {
 
     var query: string = `
@@ -100,4 +105,4 @@ async function getPopular(): Promise<any> {
     return [];
 }
 
-export default { getFavorites, getPopular };
+export default aniListFunctions;

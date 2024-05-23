@@ -87,11 +87,11 @@ const ContentPage = () => {
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('http://watch-tracker.cluster-ig3.igpolytech.fr:3001', {
+            console.log('Connecting to socket server', window.location.host.split(':')[0] + ':3001');
+            const s = socket ? socket : io('http://' + window.location.host.split(':')[0] + ':3001', {
                 query: { contentId: id, type: "ANIME", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
             })
             setSocket(s);
-
             s.on('restoreComments', (comments: Comment[]) => {
                 setComments(comments); // Restaurer les commentaires précédents
                 // console.log('Comments restored:', comments);

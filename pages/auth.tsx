@@ -33,7 +33,7 @@ const Auth = () => {
     setPasswordConfirmation("");
   }, []);
 
-  const validateStep1 = () => {
+  const validateStep1 = useCallback(() => {
     let isValid = true;
 
     setEmailError("");
@@ -75,7 +75,7 @@ const Auth = () => {
     }
 
     return isValid;
-  };
+  }, [email, password, passwordConfirmation]);
 
   const login = useCallback(async () => {
     try {

@@ -147,7 +147,7 @@ const AccountPage = () => {
     setNewPassword("");
     setConfirmationNewPassword("");
 
-  }, [email, firstName, lastName, newPassword, confirmationNewPassword]);
+  }, [email, firstName, lastName, newPassword, confirmationNewPassword, validatePasswords]);
 
   const handleBackButtonClick = () => {
     setIsEditing(false);

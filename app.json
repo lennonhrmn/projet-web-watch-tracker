@@ -1,0 +1,21 @@
+{
+    "name": "watch-tracker",
+    "description": "A simple watch tracker app",
+    "scripts": {
+        "postdeploy": "npm run migrate && npm run seed"
+    },
+    "env": {
+        "NODE_ENV": "production"
+    },
+    "formation": {
+        "web": {
+            "quantity": 1
+        }
+    },
+    "healthcheck": {
+        "path": "/api/health",
+        "interval": 10,
+        "timeout": 5,
+        "retries": 3
+    }
+}

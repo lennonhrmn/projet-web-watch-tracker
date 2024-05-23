@@ -1,5 +1,6 @@
 {
-  "name": "projet-web-watch-tracker",
+  "name": "watch-tracker",
+  "description": "A simple watch tracker app",
   "version": "0.1.0",
   "private": true,
   "scripts": {

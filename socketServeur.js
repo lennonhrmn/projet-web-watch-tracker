@@ -5,15 +5,6 @@ const { Server } = require('socket.io');
 const { PrismaClient } = require('@prisma/client');
 const { rest } = require('lodash');
 
-// function exclude(object, keys) {
-//     if (Array.isArray(object)) {
-//         return object.map((o) => exclude(o, keys));
-//     }
-//     return Object.fromEntries(
-//         Object.entries(object).filter(([key]) => !keys.includes(key))
-//     )
-// }
-
 const prisma = new PrismaClient();
 
 const server = http.createServer();
@@ -37,7 +28,6 @@ io.on('connection', async socket => {
         {
             where: {
                 contentId: contentId || '',
-                // type: type,
             },
             include: {
                 user: true,

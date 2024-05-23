@@ -66,7 +66,7 @@ const Auth = () => {
       setPasswordError("Password must contain at least one lowercase letter");
       isValid = false;
     } else if (!password.match(/[0-9]/g)) {
-      setPasswordError("Password must contain at least one `&apos;`digit");
+      setPasswordError("Password must contain at least one digit");
       isValid = false;
     } else if (!password.match(/[^a-zA-Z0-9]/g)) {
       setPasswordError("Password must contain at least one special character");

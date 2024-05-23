@@ -4,7 +4,6 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { FaCircleArrowLeft } from "react-icons/fa6";
-import Image from "next/image";
 
 
 const Auth = () => {
@@ -22,18 +21,21 @@ const Auth = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  const toggleVariant = useCallback(() => {
-    setVariant((currentVariant) =>
-      currentVariant === "login" ? "signup" : "login"
-    );
-    setLoginError("");
-    setEmailError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
+  const resetForm = useCallback(() => {
     setEmail("");
     setPassword("");
     setPasswordConfirmation("");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
   }, []);
+
+  const toggleVariant = useCallback(() => {
+    resetForm();
+    setVariant((currentVariant) =>
+      currentVariant === "login" ? "signup" : "login"
+    );
+  }, [resetForm]);
 
   const validateStep1 = useCallback(() => {
     let isValid = true;
@@ -64,7 +66,7 @@ const Auth = () => {
       setPasswordError("Password must contain at least one lowercase letter");
       isValid = false;
     } else if (!password.match(/[0-9]/g)) {
-      setPasswordError("Password must contain at least one digit");
+      setPasswordError("Password must contain at least one `&apos;`digit");
       isValid = false;
     } else if (!password.match(/[^a-zA-Z0-9]/g)) {
       setPasswordError("Password must contain at least one special character");
@@ -161,12 +163,10 @@ const Auth = () => {
         />
       )}
       <div className="text-center w-80 text-white bg-black bg-opacity-50 p-4 rounded-lg">
-        <Image
+        <img
           src="/images/logo/logo.jpg"
           alt="Logo"
           className="absolute top-0 left-0 m-4"
-          width={100}
-          height={50}
         />
         <h1 className="text-4xl mb-4 text-left font-bold">
           {variant === "login" ? "Sign in" : "Create an account"}

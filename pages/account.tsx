@@ -104,11 +104,11 @@ const AccountPage = () => {
     return isValid;
   };
 
-  const validatePasswords = () => {
+  const validatePasswords = useCallback(() => {
     const isValid = newPassword === confirmationNewPassword;
     setConfirmPasswordError(isValid ? "" : "Passwords do not match");
     return isValid;
-  };
+  }, [newPassword, confirmationNewPassword]);
 
   const handleSaveClick = useCallback(async () => {
 

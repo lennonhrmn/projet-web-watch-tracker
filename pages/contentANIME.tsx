@@ -47,7 +47,7 @@ const ContentPage = () => {
     const { saveEpisode } = useSaveEpisode();
     const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
-    const { data: userFavorites } = useFavorite(type as string); // Récupérer les favoris de l'utilisateur
+    const { data: userFavorites } = useFavorite(type as string || "ANIME"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
 
     // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
@@ -105,11 +105,10 @@ const ContentPage = () => {
                 }); // Ajouter le nouveau commentaire à la liste des commentaires
             });
         }
-
         return () => {
             if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
         };
-    }, []);
+    }, [id, user]);
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
@@ -146,16 +145,11 @@ const ContentPage = () => {
         setCommentContent(event.target.value);
     };
 
-    // Fonction pour mettre à jour l'état local des commentaires après la suppression d'un commentaire
-    const updateCommentsAfterDelete = (deletedCommentId: string) => {
-        setComments(prevComments => prevComments.filter(comment => comment.id !== deletedCommentId));
-    };
-
     // Fonction pour supprimer un commentaire, seulement accessible pour les administrateurs
     const handleDeleteComment = async (commentId: string) => {
         try {
             await deleteComment(commentId);
-            updateCommentsAfterDelete(commentId);
+            setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
         } catch (error) {
             console.error('Failed to delete comment', error);
         }

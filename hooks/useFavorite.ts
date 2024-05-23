@@ -2,6 +2,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 const useFavorite = (category: string) => {
+    console.log("cat", category)
 
     const { data, error, isLoading, mutate } = useSWR(`/api/favorites?category=${category}`, fetcher, {
         revalidateOnFocus: false,

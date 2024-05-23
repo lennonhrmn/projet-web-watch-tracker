@@ -4,7 +4,7 @@ import fetcher from '@/lib/fetcher';
 
 const useFetchLastEpisode = (userId: string, contentId: string) => {
     const { data, error, isLoading } = useSWR(
-        userId && contentId ? `/api/updateEpisode?userId=${userId}&contentId=${contentId}` : null,
+        userId && contentId ? `/api/lastEpisode?userId=${userId}&contentId=${contentId}` : null,
         fetcher
     );
 

@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run dev:next\" \"npm run dev:sock\"",
+    "dev:next": "next dev",
+    "dev:sock": "node socketServeur.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -38,6 +40,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-slick": "^0.23.13",
+    "concurrently": "^8.2.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.1",
     "postcss": "^8",

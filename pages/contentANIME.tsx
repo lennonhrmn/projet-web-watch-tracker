@@ -118,10 +118,8 @@ const ContentPage = () => {
         setCommentsOpen(!commentsOpen); // Inverser l'état de la section des commentaires
     };
 
-    const handleSubmitComment = (event: any) => {
-        console.log(event);
+    const handleSubmitComment = () => {
         console.log('user', user);
-        event.preventDefault();
         console.log('Comment content', commentContent);
         if (commentContent.trim().length === 0) {
             console.log('Comment content is empty');

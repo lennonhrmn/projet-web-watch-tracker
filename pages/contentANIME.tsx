@@ -122,6 +122,7 @@ const ContentPage = () => {
         event.preventDefault();
         console.log(event);
         if (commentContent.trim().length === 0) {
+            console.log('Comment content is empty');
             return;
         }
         const newComment: Comment = {
@@ -132,7 +133,7 @@ const ContentPage = () => {
             contentId: id as string,
             user: user
         };
-        console.log(newComment);
+        console.log("new comment à ajouter", newComment);
         if (!socket) {
             console.error('Socket connection not established');
             return;

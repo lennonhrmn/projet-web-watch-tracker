@@ -119,14 +119,14 @@ const ContentPage = () => {
         setCommentsOpen(!commentsOpen); // Inverser l'état de la section des commentaires
     };
 
-    const handleSubmitComment = (event: any) => {
+    const handleSubmitComment = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(event);
         if (commentContent.trim().length === 0) {
+            console.log('Comment content is empty');
             return;
         }
         const newComment: Comment = {
-            id: crypto.randomUUID(),
+            id: `${Math.random()}`,
             content: commentContent.trim(),
             // createdAt: new Date(),
             userId: user.id,
@@ -137,7 +137,11 @@ const ContentPage = () => {
             console.error('Socket connection not established');
             return;
         }
-        socket.emit('newComment', newComment); // Envoyer le nouveau commentaire au serveur de sockets
+        socket.emit('newComment', newComment, (response: any) => {
+            if (response.status === 'ok') {
+                mutate(`api/content${type}?id=${id}`);
+            }
+        }); // Envoyer le nouveau commentaire au serveur de sockets
         setCommentContent('');
     };
 
@@ -325,7 +329,7 @@ const ContentPage = () => {
                         {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}
                     </div>
                 </div>
-                <div className="comment-section">
+                <div className="w-[40%]">
                     <div className='flex flex-row space-x-2 mt-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md p-1 w-32 justify-center items-center'
                         onClick={handleCommentSection}>
                         <h2 className='text-white'>Comments</h2>

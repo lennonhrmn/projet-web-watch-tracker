@@ -2,7 +2,9 @@ import useSearch from '@/hooks/useSearch';
 import router from 'next/router';
 import { useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
+import { FaBook } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
+import { GoVideo } from "react-icons/go";
 
 const SearchBar = () => {
   const [searchFormActive, setSearchFormActive] = useState(false);
@@ -53,19 +55,21 @@ const SearchBar = () => {
           >
             <RxCross2 />
           </div>
-          <div className="absolute right-5 text-white top-14 bg-black border rounded-b-lg border-gray-300 shadow-lg z-50">
+          <div className="absolute right-16 text-white top-14 bg-black border rounded-b-lg border-gray-300 shadow-lg z-50">
             {searchResults.map((result, index) => (
               <div key={index} className="p-1 hover:bg-gray-600 flex flex-row gap-1" onClick={() => {
                 handleSearchContent(result.id, result.type);
                 setSearchFormActive(false);
               }}>
+                <img src={result.coverImage.medium} className="w-6 h-8" alt="cover" />
+                {result.type === 'ANIME' ? (
+                  <GoVideo className='w-6 mt-1.5' />
+                ) : (
+                  <FaBook className='w-6 mt-1.5' />
+                )}
                 <p className='mt-0.5'>
                   {result.title.english || result.title.romaji}
                 </p>
-                <p className='mt-0.5'>
-                  ({result.type.toLowerCase()})
-                </p>
-                <img src={result.coverImage.medium} className="w-6 h-8" alt="cover" />
               </div>
             ))}
           </div>

@@ -119,8 +119,10 @@ const ContentPage = () => {
     };
 
     const handleSubmitComment = (event: any) => {
-        event.preventDefault();
         console.log(event);
+        console.log('user', user);
+        event.preventDefault();
+        console.log('Comment content', commentContent);
         if (commentContent.trim().length === 0) {
             console.log('Comment content is empty');
             return;
@@ -138,6 +140,7 @@ const ContentPage = () => {
             console.error('Socket connection not established');
             return;
         }
+        console.log("socket:", socket)
         socket.emit('newComment', newComment); // Envoyer le nouveau commentaire au serveur de sockets
         setCommentContent('');
     };

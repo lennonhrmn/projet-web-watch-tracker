@@ -352,51 +352,51 @@ const ContentPage = () => {
                                 <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
                             </div>
                         )}
-                    </div>
-                </div>
-                <div className="w-[40%]">
-                    <div className='flex flex-row space-x-2 mt-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md p-1 w-32 justify-center items-center'
-                        onClick={handleCommentSection}>
-                        <h2 className='text-white'>Comments</h2>
-                        <FaCommentAlt className='text-white mt-1.5' />
-                    </div>
-                    {commentsOpen && (
-                        <div>
-                            {isAdmin ? (
-                                <ul>
-                                    {comments.map((comment: Comment, index: number) => (
-                                        <li key={index} className='flex'>
-                                            <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
-                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <ul>
-                                    {comments.map((comment: Comment, index: number) => (
-                                        <li key={index}>
-                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                        </li>
-                                    ))}
-                                </ul>
+                        <div className="w-[60%]">
+                            <div className='flex flex-row space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-28 justify-center items-center'
+                                onClick={handleCommentSection}>
+                                <h2 className='text-white'>Comments</h2>
+                                <FaCommentAlt className='text-white mt-1.5' />
+                            </div>
+                            {commentsOpen && (
+                                <div>
+                                    {isAdmin ? (
+                                        <ul>
+                                            {comments.map((comment: Comment, index: number) => (
+                                                <li key={index} className='flex'>
+                                                    <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
+                                                    <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <ul>
+                                            {comments.map((comment: Comment, index: number) => (
+                                                <li key={index}>
+                                                    <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    <form onSubmit={handleSubmitComment}>
+                                        <textarea
+                                            className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            rows={4}
+                                            value={commentContent}
+                                            onChange={handleCommentContentChange}
+                                            placeholder="Add a comment..."
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        >
+                                            Submit
+                                        </button>
+                                    </form>
+                                </div>
                             )}
-                            <form onSubmit={handleSubmitComment}>
-                                <textarea
-                                    className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    rows={4}
-                                    value={commentContent}
-                                    onChange={handleCommentContentChange}
-                                    placeholder="Add a comment..."
-                                />
-                                <button
-                                    type="submit"
-                                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Submit
-                                </button>
-                            </form>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -49,41 +49,52 @@ const Navbar = () => {
           flex
           flex-row
           items-center
+          justify-between
           transition
           duration-500
           ${showBackground ? 'bg-black bg-opacity-100' : ''}
         `}
       >
-        <img className="h-6 lg:h-8" src="/images/logo/logo2.png" alt="logo" />
-        <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
-          <Link href="/library">
-            <NavbarItem label="Library" />
-          </Link>
-          <select
-            id="categorySelect"
-            className="bg-transparent cursor-pointer hover:text-gray-300 translation"
-            onChange={handleCategoryChange}
-          >
-            <option className="text-black" value="category" style={{ display: 'none' }}>
-              Category
-            </option>
-            <option className="text-black" value="anime">
-              Anime
-            </option>
-            <option className="text-black" value="manga">
-              Manga
-            </option>
-          </select>
-          <Link href="/account">
-            <NavbarItem label="Account" />
-          </Link>
-          <div onClick={() => signOut({ callbackUrl: '/auth' })} className="cursor-pointer">
-            <NavbarItem label="Sign out" />
+        <div className="flex items-center">
+          <img className="h-6 lg:h-8" src="/images/logo/logo2.png" alt="logo" />
+          <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
+            <Link href="/library">
+              <NavbarItem label="Library" />
+            </Link>
+            <select
+              id="categorySelect"
+              className="bg-transparent cursor-pointer hover:text-gray-300 transition"
+              onChange={handleCategoryChange}
+            >
+              <option className="text-black" value="category" style={{ display: 'none' }}>
+                Category
+              </option>
+              <option className="text-black" value="anime">
+                Anime
+              </option>
+              <option className="text-black" value="manga">
+                Manga
+              </option>
+            </select>
+            <Link href="/account">
+              <NavbarItem label="Account" />
+            </Link>
+            <div onClick={() => signOut({ callbackUrl: '/auth' })} className="cursor-pointer">
+              <NavbarItem label="Sign out" />
+            </div>
           </div>
         </div>
-        <div onClick={toggleMobileMenu} className="sm:hidden flex flex-row items-center gap-2 ml-8 cursor-pointer relative">
-          <RxHamburgerMenu className="text-white transition" />
-          <MobileMenu visible={showMobileMenu} />
+        <div className="flex-grow flex justify-center">
+          <div className="relative">
+            <div onClick={toggleMobileMenu} className="sm:hidden flex items-center cursor-pointer">
+              <RxHamburgerMenu className="text-white transition" />
+            </div>
+            {showMobileMenu && (
+              <div className="absolute top-10 left-1/2 transform -translate-x-1/2">
+                <MobileMenu visible={showMobileMenu} />
+              </div>
+            )}
+          </div>
         </div>
         <SearchBar />
       </div>

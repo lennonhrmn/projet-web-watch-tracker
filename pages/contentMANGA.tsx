@@ -20,21 +20,23 @@ import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
 
+
 interface Comment {
     id: String
     content: String
-    // createdAt: Date
     userId: String
     contentId: String
     user: any
 }
+
+
 
 const ContentPage = () => {
     const [expanded, setExpanded] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [commentsOpen, setCommentsOpen] = useState(false); // Variable d'état pour suivre si la section des commentaires est ouverte ou fermée
     const [readEpisodes, setReadEpisodes] = useState<Set<number>>(new Set()); // Liste des épisodes lus
-    // const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+    const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
     const [comments, setComments] = useState<Comment[]>([]); // Nouveau state pour stocker les commentaires
     const [commentContent, setCommentContent] = useState('');
     const { deleteComment } = useDeleteComment();
@@ -44,8 +46,8 @@ const ContentPage = () => {
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
     const { data: content } = useContent(id as string, type as string);
-    // const { saveEpisode } = useSaveEpisode();
-    // const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
+    const { saveEpisode } = useSaveEpisode();
+    const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "MANGA"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
@@ -71,44 +73,80 @@ const ContentPage = () => {
         }
     }, [id, mutate, router, isMounted, type]);
 
-    // useEffect(() => {
-    //     if (lastEpisode) {
-    //         setSelectedEpisode(lastEpisode);
-    //         // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
-    //         const newEpisodes = new Set<number>();
-    //         for (let i = 1; i <= lastEpisode; i++) {
-    //             newEpisodes.add(i);
-    //         }
-    //         setReadEpisodes(new Set([...Array.from(newEpisodes)]));
-    //     }
-    // }, [lastEpisode]);
+    useEffect(() => {
+        if (lastEpisode) {
+            setSelectedEpisode(lastEpisode);
+            // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
+            const newEpisodes = new Set<number>();
+            for (let i = 1; i <= lastEpisode; i++) {
+                newEpisodes.add(i);
+            }
+            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
+        }
+    }, [lastEpisode]);
 
 
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('http://' + window.location.host.split(':')[0] + ':3001', {
+            const s = socket ? socket : io('http://' + window.location.host, {
                 query: { contentId: id, type: "MANGA", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
-            })
+            });
             setSocket(s);
 
             s.on('restoreComments', (comments: Comment[]) => {
-                setComments(comments); // Restaurer les commentaires précédents
-                // console.log('Comments restored:', comments);
+                setComments(comments);
             });
 
             s.on('newComment', (comment: Comment) => {
-                console.log('New comment received:', comments, comment);
                 setComments(prevComments => {
                     const newComments = [...prevComments, comment];
                     return Array.from(new Set(newComments.map(c => JSON.stringify(c)))).map(c => JSON.parse(c));
-                }); // Ajouter le nouveau commentaire à la liste des commentaires
+                });
             });
+
+            // Ajouter l'événement de déchargement de la page pour gérer la déconnexion du socket
+            window.addEventListener('beforeunload', handleBeforeUnload);
+
         }
+        // Nettoyer l'événement lors du démontage du composant
         return () => {
-            if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
+            if (socket) {
+                socket.disconnect();
+            }
+            window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [id, user]);
+
+    useEffect(() => {
+        const handleRouteChange = () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+
+        router.events.on('routeChangeStart', handleRouteChange);
+
+        return () => {
+            router.events.off('routeChangeStart', handleRouteChange);
+        };
+    }, [socket, router]);
+
+    const handleBeforeUnload = () => {
+        if (socket) {
+            console.log('Disconnecting socket');
+            socket.disconnect();
+        }
+        console.log('resetting comments and comment content')
+        setCommentContent('');
+        setComments([]);
+    };
+
+    const handlePageChange = () => {
+        if (socket) {
+            socket.disconnect();
+        }
+    };
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
@@ -122,13 +160,11 @@ const ContentPage = () => {
     const handleSubmitComment = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (commentContent.trim().length === 0) {
-            console.log('Comment content is empty');
             return;
         }
         const newComment: Comment = {
             id: `${Math.random()}`,
             content: commentContent.trim(),
-            // createdAt: new Date(),
             userId: user.id,
             contentId: id as string,
             user: user
@@ -159,24 +195,24 @@ const ContentPage = () => {
         }
     };
 
-    // const handleSaveEpisode = async () => {
-    //     if (selectedEpisode !== null && session?.user) {
-    //         const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
-    //         for (let i = 1; i <= selectedEpisode; i++) {
-    //             newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
-    //         }
-    //         setReadEpisodes(new Set([...Array.from(newEpisodes)]));
+    const handleSaveEpisode = async () => {
+        if (selectedEpisode !== null && session?.user) {
+            const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
+            for (let i = 1; i <= selectedEpisode; i++) {
+                newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
+            }
+            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
 
-    //         try {
-    //             await saveEpisode(session.user.id, id as string, selectedEpisode);
-    //             console.log('Episode saved successfully');
-    //         } catch (error) {
-    //             console.error('Failed to save episode', error);
-    //         }
-    //     } else {
-    //         console.log("No episode selected or user not logged in");
-    //     }
-    // };
+            try {
+                await saveEpisode(session.user.id, id as string, selectedEpisode);
+                console.log('Episode saved successfully');
+            } catch (error) {
+                console.error('Failed to save episode', error);
+            }
+        } else {
+            console.log("No episode selected or user not logged in");
+        }
+    };
 
     const toggleDescription = () => {
         setExpanded(!expanded);
@@ -204,28 +240,29 @@ const ContentPage = () => {
         return `${days} days ${hours} hours`;
     }
 
-    // const handleEpisodeClick = (episodeNumber: number | null) => {
-    //     setSelectedEpisode(episodeNumber);
-    //     if (episodeNumber === null) {
-    //         return;
-    //     }
-    //     setReadEpisodes(prevEpisodes => {
-    //         const newEpisodes = new Set<number>(Array.from(prevEpisodes));
-    //         for (let i = 1; i <= episodeNumber; i++) {
-    //             newEpisodes.add(i);
-    //         }
-    //         return newEpisodes;
-    //     });
-    // };
+    const handleEpisodeClick = (episodeNumber: number | null) => {
+        setSelectedEpisode(episodeNumber);
+        if (episodeNumber === null) {
+            return;
+        }
+        setReadEpisodes(prevEpisodes => {
+            const newEpisodes = new Set<number>(Array.from(prevEpisodes));
+            for (let i = 1; i <= episodeNumber; i++) {
+                newEpisodes.add(i);
+            }
+            return newEpisodes;
+        });
+    };
 
     const handleBackButtonClick = () => {
+        handleBeforeUnload();
         router.back();
     };
 
     return (
         <div className="">
             <Navbar />
-            <img src={bannerSrc} alt="Banner" className='w-full h-auto top-0 left-0 absolute z-0 opacity-20' />
+            <img src={bannerSrc} className='w-full h-auto top-0 left-0 absolute z-0 opacity-20' />
             <div className='absolute'>
                 <FaCircleArrowLeft
                     size={40}
@@ -233,7 +270,7 @@ const ContentPage = () => {
                     onClick={handleBackButtonClick}
                 />
                 <div className='flex items-start z-2'>
-                    <img src={coverImage.large} alt="Cover" className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
+                    <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
                     <div className={`${expanded ? 'relative ml-24 mt-20 z-3' : 'ml-24 mt-20'}`}>
                         <p className="
                         text-white
@@ -280,17 +317,17 @@ const ContentPage = () => {
                                     <FaHeart className='text-red-500 text-1xl' />
                                 </div>
                                 <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                {/* {isFavorite && (
+                                {isFavorite && chapters !== undefined && chapters !== null && (
                                     <div className='flex flex-row space-x-3'>
                                         <DropdownList
-                                            episodes={(episodes !== undefined && episodes !== null) ? episodes : nextAiringEpisode.episode - 1}
+                                            episodes={chapters}
                                             onSelectEpisode={handleEpisodeClick}
                                             savedEpisodes={readEpisodes}
                                             selectedEpisode={selectedEpisode}
                                         />
-                                        <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveEpisode} />
+                                        <FaRegCheckCircle size={25} className='mt-2 cursor-pointer' onClick={handleSaveEpisode} />
                                     </div>
-                                )} */}
+                                )}
                             </div>
                         </div>
                         {genres && (
@@ -310,23 +347,6 @@ const ContentPage = () => {
                                 <p className='text-white text-xs'>Status - {status}</p>
                             </div>
                         </div>
-                        {/* {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
-                            <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                                <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
-                            </div>
-                        )} */}
-                        {/* {type === 'ANIME' && (
-                        <p className='text-white text-1xl'>Number of episodes - { content?.episodes }</p>
-                    )}
-                    {type === 'MANGA' && (
-                        <p className='text-white text-1xl'>Number of chapters - { content?.chapters }</p>
-                    )} */}
-                        {/* <p className='text-white text-1xl'>Last updated - { updatedAt }</p> */}
-                        {/* {nextAiringEpisode && nextAiringEpisode.episode && (
-                        <p className='text-white text-1xl'>Next Episode - { nextAiringEpisode.episode }</p>)} */}
-                        {/* <p className='text-white text-1xl'>Sources - { sources } (fonctionne pas ?)</p> */}
-                        {/* <p className='text-white text-1xl'>Trailer link - { trailer.site } (pas terrible)</p> */}
-                        {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}
                     </div>
                 </div>
                 <div className="w-[40%]">

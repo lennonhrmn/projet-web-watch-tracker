@@ -19,17 +19,17 @@ import useFavorite from '@/hooks/useFavorite';
 import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
-import * as crypto from 'crypto';
 
 
 interface Comment {
     id: String
     content: String
-    // createdAt: Date
     userId: String
     contentId: String
     user: any
 }
+
+
 
 const ContentPage = () => {
     const [expanded, setExpanded] = useState(false);
@@ -104,12 +104,49 @@ const ContentPage = () => {
                     return Array.from(new Set(newComments.map(c => JSON.stringify(c)))).map(c => JSON.parse(c));
                 });
             });
+
+            // Ajouter l'événement de déchargement de la page pour gérer la déconnexion du socket
+            window.addEventListener('beforeunload', handleBeforeUnload);
+
         }
+        // Nettoyer l'événement lors du démontage du composant
         return () => {
-            if (socket) socket.disconnect();
+            if (socket) {
+                socket.disconnect();
+            }
+            window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [id, user]);
 
+    useEffect(() => {
+        const handleRouteChange = () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+
+        router.events.on('routeChangeStart', handleRouteChange);
+
+        return () => {
+            router.events.off('routeChangeStart', handleRouteChange);
+        };
+    }, [socket, router]);
+
+    const handleBeforeUnload = () => {
+        if (socket) {
+            console.log('Disconnecting socket');
+            socket.disconnect();
+        }
+        console.log('resetting comments and comment content')
+        setCommentContent('');
+        setComments([]);
+    };
+
+    const handlePageChange = () => {
+        if (socket) {
+            socket.disconnect();
+        }
+    };
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
@@ -121,29 +158,21 @@ const ContentPage = () => {
     };
 
     const handleSubmitComment = (event: React.FormEvent<HTMLFormElement>) => {
-        console.log(event);
         event.preventDefault();
-        console.log('user', user);
-        console.log('Comment content', commentContent);
         if (commentContent.trim().length === 0) {
-            console.log('Comment content is empty');
             return;
         }
-        console.log("I am here")
         const newComment: Comment = {
             id: `${Math.random()}`,
             content: commentContent.trim(),
-            // createdAt: new Date(),
             userId: user.id,
             contentId: id as string,
             user: user
         };
-        console.log("new comment à ajouter", newComment);
         if (!socket) {
             console.error('Socket connection not established');
             return;
         }
-        console.log("socket:", socket)
         socket.emit('newComment', newComment, (response: any) => {
             if (response.status === 'ok') {
                 mutate(`api/content${type}?id=${id}`);
@@ -226,6 +255,7 @@ const ContentPage = () => {
     };
 
     const handleBackButtonClick = () => {
+        handleBeforeUnload();
         router.back();
     };
 
@@ -322,18 +352,6 @@ const ContentPage = () => {
                                 <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
                             </div>
                         )}
-                        {/* {type === 'ANIME' && (
-                        <p className='text-white text-1xl'>Number of episodes - { content?.episodes }</p>
-                    )}
-                    {type === 'MANGA' && (
-                        <p className='text-white text-1xl'>Number of chapters - { content?.chapters }</p>
-                    )} */}
-                        {/* <p className='text-white text-1xl'>Last updated - { updatedAt }</p> */}
-                        {/* {nextAiringEpisode && nextAiringEpisode.episode && (
-                        <p className='text-white text-1xl'>Next Episode - { nextAiringEpisode.episode }</p>)} */}
-                        {/* <p className='text-white text-1xl'>Sources - { sources } (fonctionne pas ?)</p> */}
-                        {/* <p className='text-white text-1xl'>Trailer link - { trailer.site } (pas terrible)</p> */}
-                        {/* <p className='text-white text-1xl'>Studios - { studios.nodes.name } (pas terrible)</p> */}
                     </div>
                 </div>
                 <div className="w-[40%]">

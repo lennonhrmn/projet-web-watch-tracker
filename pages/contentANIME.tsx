@@ -87,28 +87,27 @@ const ContentPage = () => {
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('http://' + window.location.host.split(':')[0] + ':3001', {
+            const s = socket ? socket : io('http://' + window.location.host, {
                 query: { contentId: id, type: "ANIME", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
-            })
+            });
             setSocket(s);
 
             s.on('restoreComments', (comments: Comment[]) => {
-                setComments(comments); // Restaurer les commentaires précédents
-                // console.log('Comments restored:', comments);
+                setComments(comments);
             });
 
             s.on('newComment', (comment: Comment) => {
-                console.log('New comment received:', comments, comment);
                 setComments(prevComments => {
                     const newComments = [...prevComments, comment];
                     return Array.from(new Set(newComments.map(c => JSON.stringify(c)))).map(c => JSON.parse(c));
-                }); // Ajouter le nouveau commentaire à la liste des commentaires
+                });
             });
         }
         return () => {
-            if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
+            if (socket) socket.disconnect();
         };
     }, [id, user]);
+
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {

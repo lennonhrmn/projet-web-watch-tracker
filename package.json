@@ -4,13 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:next\" \"npm run dev:sock\"",
-    "dev:next": "next dev",
-    "dev:sock": "node socketServeur.js",
-    "prod:next": "next start",
-    "prod:sock": "node socketServeur.js",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "concurrently \"npm run prod:next\" \"npm run prod:sock\"",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {

@@ -119,6 +119,7 @@ const ContentPage = () => {
     };
 
     const handleSubmitComment = (event: React.FormEvent<HTMLFormElement>) => {
+        console.log(event);
         event.preventDefault();
         console.log('user', user);
         console.log('Comment content', commentContent);
@@ -140,7 +141,11 @@ const ContentPage = () => {
             return;
         }
         console.log("socket:", socket)
-        socket.emit('newComment', newComment); // Envoyer le nouveau commentaire au serveur de sockets
+        socket.emit('newComment', newComment, (response: any) => {
+            if (response.status === 'ok') {
+                mutate(`api/content${type}?id=${id}`);
+            }
+        }); // Envoyer le nouveau commentaire au serveur de sockets
         setCommentContent('');
     };
 

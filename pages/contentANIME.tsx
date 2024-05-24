@@ -284,7 +284,7 @@ const ContentPage = () => {
                                             savedEpisodes={readEpisodes}
                                             selectedEpisode={selectedEpisode}
                                         />
-                                        <FaRegCheckCircle size={25} className='mt-2' onClick={handleSaveEpisode} />
+                                        <FaRegCheckCircle size={25} className='mt-2 cursor-pointer' onClick={handleSaveEpisode} />
                                     </div>
                                 )}
                             </div>

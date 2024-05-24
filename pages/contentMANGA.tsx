@@ -69,7 +69,7 @@ const ContentPage = () => {
         } else if (id && type) {
             mutate(`api/content${type}?id=${id}`);
         }
-    }, [id, router, isMounted, type]);
+    }, [id, mutate, router, isMounted, type]);
 
     // useEffect(() => {
     //     if (lastEpisode) {
@@ -87,7 +87,7 @@ const ContentPage = () => {
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('http://watch-tracker.cluster-ig3.igpolytech.fr:3001', {
+            const s = socket ? socket : io('http://' + window.location.host.split(':')[0] + ':3001', {
                 query: { contentId: id, type: "MANGA", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
             })
             setSocket(s);
@@ -108,7 +108,7 @@ const ContentPage = () => {
         return () => {
             if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
         };
-    }, [id, user, comments, socket]);
+    }, [id, user]);
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {

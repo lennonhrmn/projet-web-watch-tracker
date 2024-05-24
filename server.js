@@ -55,6 +55,7 @@ app.prepare().then(() => {
                         contentId: newComment.contentId,
                     },
                 });
+                console.log('Comment saved successfully');
                 io.to(contentId).emit('newComment', { ...newComment, user });
             } catch (error) {
                 console.error('Error saving comment:', error);

@@ -64,7 +64,7 @@ const Navbar = () => {
             className="bg-transparent cursor-pointer hover:text-gray-300 translation"
             onChange={handleCategoryChange}
           >
-            <option className="text-black" value="category">
+            <option className="text-black" value="category" style={{ display: 'none' }}>
               Category
             </option>
             <option className="text-black" value="anime">

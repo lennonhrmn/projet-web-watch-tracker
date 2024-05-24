@@ -69,7 +69,7 @@ const ContentPage = () => {
         } else if (id && type) {
             mutate(`api/content${type}?id=${id}`);
         }
-    }, [id, router, isMounted, type]);
+    }, [id, mutate, router, isMounted, type]);
 
     useEffect(() => {
         if (lastEpisode) {
@@ -87,11 +87,11 @@ const ContentPage = () => {
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            console.log('Connecting to socket server', window.location.host.split(':')[0] + ':3001');
             const s = socket ? socket : io('http://' + window.location.host.split(':')[0] + ':3001', {
                 query: { contentId: id, type: "ANIME", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
             })
             setSocket(s);
+
             s.on('restoreComments', (comments: Comment[]) => {
                 setComments(comments); // Restaurer les commentaires précédents
                 // console.log('Comments restored:', comments);
@@ -108,7 +108,7 @@ const ContentPage = () => {
         return () => {
             if (socket) socket.disconnect(); // Déconnexion du serveur de sockets lorsque le composant est démonté
         };
-    }, [id, user, comments, socket]);
+    }, [id, user]);
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
@@ -221,7 +221,7 @@ const ContentPage = () => {
     return (
         <div className="">
             <Navbar />
-            <img src={bannerSrc} alt="Banner" className='w-full h-auto top-0 left-0 absolute z-0 opacity-20' />
+            <img src={bannerSrc} className='w-full h-auto top-0 left-0 absolute z-0 opacity-20' />
             <div className='absolute'>
                 <FaCircleArrowLeft
                     size={40}
@@ -229,7 +229,7 @@ const ContentPage = () => {
                     onClick={handleBackButtonClick}
                 />
                 <div className='flex items-start z-2'>
-                    <img src={coverImage.large} alt="Cover" className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
+                    <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
                     <div className={`${expanded ? 'relative ml-24 mt-20 z-3' : 'ml-24 mt-20'}`}>
                         <p className="
                         text-white

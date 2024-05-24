@@ -132,6 +132,7 @@ const ContentPage = () => {
             contentId: id as string,
             user: user
         };
+        console.log(newComment);
         if (!socket) {
             console.error('Socket connection not established');
             return;

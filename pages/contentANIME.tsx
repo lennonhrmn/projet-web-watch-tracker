@@ -127,6 +127,7 @@ const ContentPage = () => {
             console.log('Comment content is empty');
             return;
         }
+        console.log("I am here")
         const newComment: Comment = {
             id: crypto.randomUUID(),
             content: commentContent.trim(),

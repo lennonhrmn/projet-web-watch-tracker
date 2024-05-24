@@ -19,6 +19,8 @@ import useFavorite from '@/hooks/useFavorite';
 import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
+import * as crypto from 'crypto';
+
 
 interface Comment {
     id: String

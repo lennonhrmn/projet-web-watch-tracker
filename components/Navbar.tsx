@@ -54,8 +54,8 @@ const Navbar = () => {
           ${showBackground ? 'bg-black bg-opacity-100' : ''}
         `}
       >
-        <img className="h-6 lg:h-7" src="/images/logo/logo.jpg" alt="logo" />
-        <div className="text-white flex-row ml-8 hidden gap-7 sm:flex">
+        <img className="h-6 lg:h-8" src="/images/logo/logo2.png" alt="logo" />
+        <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
           <Link href="/library">
             <NavbarItem label="Library" />
           </Link>

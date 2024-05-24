@@ -164,9 +164,9 @@ const Auth = () => {
       )}
       <div className="text-center w-80 text-white bg-black bg-opacity-50 p-4 rounded-lg">
         <img
-          src="/images/logo/logo.jpg"
+          src="/images/logo/logo2.png"
           alt="Logo"
-          className="absolute top-0 left-0 m-4"
+          className="absolute top-0 left-0 m-4 w-48"
         />
         <h1 className="text-4xl mb-4 text-left font-bold">
           {variant === "login" ? "Sign in" : "Create an account"}

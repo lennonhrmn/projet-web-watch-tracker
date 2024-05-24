@@ -131,7 +131,7 @@ const ContentPage = () => {
         }
         console.log("I am here")
         const newComment: Comment = {
-            id: crypto.randomUUID(),
+            id: `${Math.random()}`,
             content: commentContent.trim(),
             // createdAt: new Date(),
             userId: user.id,

@@ -118,7 +118,8 @@ const ContentPage = () => {
         setCommentsOpen(!commentsOpen); // Inverser l'état de la section des commentaires
     };
 
-    const handleSubmitComment = () => {
+    const handleSubmitComment = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         console.log('user', user);
         console.log('Comment content', commentContent);
         if (commentContent.trim().length === 0) {

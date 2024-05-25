@@ -12,11 +12,11 @@ import { FaCommentAlt, FaHeart, FaRegCheckCircle } from "react-icons/fa";
 import DropdownList from '@/components/DropdownList';
 import io, { Socket } from 'socket.io-client'; // Importation de socket.io-client
 import useCurrentUser from '@/hooks/useCurrentUser';
-import useSaveEpisode from '@/hooks/useSaveEpisode';
+import useSaveContent from '@/hooks/useSaveContent';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { useSession } from 'next-auth/react';
 import useFavorite from '@/hooks/useFavorite';
-import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
+import useFetchLastContent from '@/hooks/useFetchLastContent';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
 
@@ -46,8 +46,8 @@ const ContentPage = () => {
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
     const { data: content } = useContent(id as string, type as string);
-    const { saveEpisode } = useSaveEpisode();
-    const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
+    const { saveEpisode } = useSaveContent();
+    const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "MANGA"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
@@ -74,16 +74,16 @@ const ContentPage = () => {
     }, [id, mutate, router, isMounted, type]);
 
     useEffect(() => {
-        if (lastEpisode) {
-            setSelectedEpisode(lastEpisode);
+        if (lastContentWatched) {
+            setSelectedEpisode(lastContentWatched);
             // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
             const newEpisodes = new Set<number>();
-            for (let i = 1; i <= lastEpisode; i++) {
+            for (let i = 1; i <= lastContentWatched; i++) {
                 newEpisodes.add(i);
             }
             setReadEpisodes(new Set([...Array.from(newEpisodes)]));
         }
-    }, [lastEpisode]);
+    }, [lastContentWatched]);
 
 
     // Connexion au serveur de sockets
@@ -142,12 +142,6 @@ const ContentPage = () => {
         setComments([]);
     };
 
-    const handlePageChange = () => {
-        if (socket) {
-            socket.disconnect();
-        }
-    };
-
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
         setIsFavorite(!isFavorite); // Inverser l'état de la variable d'état isFavorite
@@ -204,7 +198,7 @@ const ContentPage = () => {
             setReadEpisodes(new Set([...Array.from(newEpisodes)]));
 
             try {
-                await saveEpisode(session.user.id, id as string, selectedEpisode);
+                await saveEpisode(session.user.id, id as string, selectedEpisode, lastChapter);
                 console.log('Episode saved successfully');
             } catch (error) {
                 console.error('Failed to save episode', error);
@@ -233,6 +227,8 @@ const ContentPage = () => {
     const showRomaji = title.romaji && title.romaji !== title.english;
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
+
+    let lastChapter = chapters ? chapters : 0;
 
     function formatTime(seconds: any) {
         const days = Math.floor(seconds / (24 * 60 * 60));
@@ -317,10 +313,10 @@ const ContentPage = () => {
                                     <FaHeart className='text-red-500 text-1xl' />
                                 </div>
                                 <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                {isFavorite && chapters !== undefined && chapters !== null && (
+                                {isFavorite && (
                                     <div className='flex flex-row space-x-3'>
                                         <DropdownList
-                                            episodes={chapters}
+                                            episodes={lastChapter}
                                             onSelectEpisode={handleEpisodeClick}
                                             savedEpisodes={readEpisodes}
                                             selectedEpisode={selectedEpisode}
@@ -347,51 +343,51 @@ const ContentPage = () => {
                                 <p className='text-white text-xs'>Status - {status}</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className="w-[40%]">
-                    <div className='flex flex-row space-x-2 mt-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md p-1 w-32 justify-center items-center'
-                        onClick={handleCommentSection}>
-                        <h2 className='text-white'>Comments</h2>
-                        <FaCommentAlt className='text-white mt-1.5' />
-                    </div>
-                    {commentsOpen && (
-                        <div>
-                            {isAdmin ? (
-                                <ul>
-                                    {comments.map((comment: Comment, index: number) => (
-                                        <li key={index} className='flex'>
-                                            <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
-                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <ul>
-                                    {comments.map((comment: Comment, index: number) => (
-                                        <li key={index}>
-                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                        </li>
-                                    ))}
-                                </ul>
+                        <div className="w-[60%]">
+                            <div className='flex flex-row space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-28 justify-center items-center'
+                                onClick={handleCommentSection}>
+                                <h2 className='text-white'>Comments</h2>
+                                <FaCommentAlt className='text-white mt-1.5' />
+                            </div>
+                            {commentsOpen && (
+                                <div>
+                                    {isAdmin ? (
+                                        <ul>
+                                            {comments.map((comment: Comment, index: number) => (
+                                                <li key={index} className='flex'>
+                                                    <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
+                                                    <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <ul>
+                                            {comments.map((comment: Comment, index: number) => (
+                                                <li key={index}>
+                                                    <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    <form onSubmit={handleSubmitComment}>
+                                        <textarea
+                                            className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            rows={4}
+                                            value={commentContent}
+                                            onChange={handleCommentContentChange}
+                                            placeholder="Add a comment..."
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        >
+                                            Submit
+                                        </button>
+                                    </form>
+                                </div>
                             )}
-                            <form onSubmit={handleSubmitComment}>
-                                <textarea
-                                    className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    rows={4}
-                                    value={commentContent}
-                                    onChange={handleCommentContentChange}
-                                    placeholder="Add a comment..."
-                                />
-                                <button
-                                    type="submit"
-                                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Submit
-                                </button>
-                            </form>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

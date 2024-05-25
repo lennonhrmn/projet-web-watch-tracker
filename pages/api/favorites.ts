@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prismadb from "@/lib/prismadb";
 import serveurAuth from "@/lib/serveurAuth";
 import aniListFunction from "@/lib/aniListFunctions";
-import { get } from "lodash";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 

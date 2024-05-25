@@ -6,9 +6,9 @@ const DropdownList = ({ episodes, onSelectEpisode, savedEpisodes, selectedEpisod
         onSelectEpisode(isNaN(selectedEpisode) ? null : selectedEpisode); // Appeler la fonction de rappel avec le numéro d'épisode sélectionné ou null si aucun épisode n'est sélectionné
     };
 
-    if (episodes <= 0) {
-        return null;
-    }
+    // if (episodes <= 0) {
+    //     return null;
+    // }
 
     return (
         <div className="h-5 w-28 mt-2.5 rounded-md">

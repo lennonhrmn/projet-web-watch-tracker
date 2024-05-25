@@ -12,11 +12,11 @@ import { FaCommentAlt, FaHeart, FaRegCheckCircle } from "react-icons/fa";
 import DropdownList from '@/components/DropdownList';
 import io, { Socket } from 'socket.io-client'; // Importation de socket.io-client
 import useCurrentUser from '@/hooks/useCurrentUser';
-import useSaveEpisode from '@/hooks/useSaveEpisode';
+import useSaveContent from '@/hooks/useSaveContent';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { useSession } from 'next-auth/react';
 import useFavorite from '@/hooks/useFavorite';
-import useFetchLastEpisode from '@/hooks/useFetchLastEpisode';
+import useFetchLastContent from '@/hooks/useFetchLastContent';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
 
@@ -46,8 +46,8 @@ const ContentPage = () => {
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
     const { data: content } = useContent(id as string, type as string);
-    const { saveEpisode } = useSaveEpisode();
-    const { lastEpisode } = useFetchLastEpisode(user?.id as string, id as string);
+    const { saveEpisode } = useSaveContent();
+    const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "ANIME"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
@@ -74,16 +74,16 @@ const ContentPage = () => {
     }, [id, mutate, router, isMounted, type]);
 
     useEffect(() => {
-        if (lastEpisode) {
-            setSelectedEpisode(lastEpisode);
+        if (lastContentWatched) {
+            setSelectedEpisode(lastContentWatched);
             // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
             const newEpisodes = new Set<number>();
-            for (let i = 1; i <= lastEpisode; i++) {
+            for (let i = 1; i <= lastContentWatched; i++) {
                 newEpisodes.add(i);
             }
             setReadEpisodes(new Set([...Array.from(newEpisodes)]));
         }
-    }, [lastEpisode]);
+    }, [lastContentWatched]);
 
 
     // Connexion au serveur de sockets
@@ -142,12 +142,6 @@ const ContentPage = () => {
         setComments([]);
     };
 
-    const handlePageChange = () => {
-        if (socket) {
-            socket.disconnect();
-        }
-    };
-
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {
         setIsFavorite(!isFavorite); // Inverser l'état de la variable d'état isFavorite
@@ -204,7 +198,7 @@ const ContentPage = () => {
             setReadEpisodes(new Set([...Array.from(newEpisodes)]));
 
             try {
-                await saveEpisode(session.user.id, id as string, selectedEpisode);
+                await saveEpisode(session.user.id, id as string, selectedEpisode, lastEpisode);
                 console.log('Episode saved successfully');
             } catch (error) {
                 console.error('Failed to save episode', error);
@@ -233,6 +227,8 @@ const ContentPage = () => {
     const showRomaji = title.romaji && title.romaji !== title.english;
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
+
+    const lastEpisode = episodes ? episodes : nextAiringEpisode.episode - 1;
 
     function formatTime(seconds: any) {
         const days = Math.floor(seconds / (24 * 60 * 60));
@@ -320,7 +316,7 @@ const ContentPage = () => {
                                 {isFavorite && (
                                     <div className='flex flex-row space-x-3'>
                                         <DropdownList
-                                            episodes={(episodes !== undefined && episodes !== null) ? episodes : nextAiringEpisode.episode - 1}
+                                            episodes={lastEpisode}
                                             onSelectEpisode={handleEpisodeClick}
                                             savedEpisodes={readEpisodes}
                                             selectedEpisode={selectedEpisode}

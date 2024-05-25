@@ -28,7 +28,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
             if (isFavorite) {
                 response = await axios.delete("/api/favorite", { data: { contentId, session: currentSession } });
             } else {
-                response = await axios.post("/api/favorite", { contentId, session: currentSession });
+                response = await axios.post("/api/favorite", { contentId, type, session: currentSession });
             }
 
             // Mettre à jour les favoris après l'action

@@ -1,3 +1,4 @@
+// pages/api/favorite/updateEpisode.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prismadb';
 import { getSession } from 'next-auth/react';
@@ -6,19 +7,16 @@ const handler = async function handler(req: NextApiRequest, res: NextApiResponse
 
     const session = await getSession({ req });
 
-    const { userId, contentId } = req.query;
+    const { userId, contentId, lastContentWatch, lastContent } = req.body;
 
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
         try {
-            const favorite = await prisma.favorite.findFirst({
-                where: {
-                    userId: userId as string,
-                    contentId: contentId as string,
-                },
-                select: { lastEpisode: true },
+            const favorite = await prisma.favorite.updateMany({
+                where: { userId, contentId },
+                data: { lastContentWatch, lastContent },
             });
 
-            if (!favorite) {
+            if (favorite.count === 0) {
                 return res.status(404).json({ message: 'Favorite not found' });
             }
 

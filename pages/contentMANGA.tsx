@@ -35,8 +35,8 @@ const ContentPage = () => {
     const [expanded, setExpanded] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [commentsOpen, setCommentsOpen] = useState(false); // Variable d'état pour suivre si la section des commentaires est ouverte ou fermée
-    const [readEpisodes, setReadEpisodes] = useState<Set<number>>(new Set()); // Liste des épisodes lus
-    const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+    const [readChapters, setReadChapters] = useState<Set<number>>(new Set()); // Liste des épisodes lus
+    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     const [comments, setComments] = useState<Comment[]>([]); // Nouveau state pour stocker les commentaires
     const [commentContent, setCommentContent] = useState('');
     const { deleteComment } = useDeleteComment();
@@ -46,7 +46,7 @@ const ContentPage = () => {
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
     const { data: content } = useContent(id as string, type as string);
-    const { saveEpisode } = useSaveContent();
+    const { saveContent } = useSaveContent();
     const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "MANGA"); // Récupérer les favoris de l'utilisateur
@@ -75,13 +75,13 @@ const ContentPage = () => {
 
     useEffect(() => {
         if (lastContentWatched) {
-            setSelectedEpisode(lastContentWatched);
-            // Mettre à jour readEpisodes pour refléter les épisodes jusqu'au dernier épisode lu
-            const newEpisodes = new Set<number>();
+            setSelectedChapter(lastContentWatched);
+            // Mettre à jour readchapters pour refléter les épisodes jusqu'au dernier épisode lu
+            const newchapters = new Set<number>();
             for (let i = 1; i <= lastContentWatched; i++) {
-                newEpisodes.add(i);
+                newchapters.add(i);
             }
-            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
+            setReadChapters(new Set([...Array.from(newchapters)]));
         }
     }, [lastContentWatched]);
 
@@ -189,25 +189,6 @@ const ContentPage = () => {
         }
     };
 
-    const handleSaveEpisode = async () => {
-        if (selectedEpisode !== null && session?.user) {
-            const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
-            for (let i = 1; i <= selectedEpisode; i++) {
-                newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
-            }
-            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
-
-            try {
-                await saveEpisode(session.user.id, id as string, selectedEpisode, lastChapter);
-                console.log('Episode saved successfully');
-            } catch (error) {
-                console.error('Failed to save episode', error);
-            }
-        } else {
-            console.log("No episode selected or user not logged in");
-        }
-    };
-
     const toggleDescription = () => {
         setExpanded(!expanded);
     };
@@ -236,18 +217,30 @@ const ContentPage = () => {
         return `${days} days ${hours} hours`;
     }
 
-    const handleEpisodeClick = (episodeNumber: number | null) => {
-        setSelectedEpisode(episodeNumber);
-        if (episodeNumber === null) {
+    const handlechapterClick = async (chapterNumber: number | null) => {
+        setSelectedChapter(chapterNumber);
+        if (chapterNumber === null) {
             return;
         }
-        setReadEpisodes(prevEpisodes => {
-            const newEpisodes = new Set<number>(Array.from(prevEpisodes));
-            for (let i = 1; i <= episodeNumber; i++) {
-                newEpisodes.add(i);
+        setReadChapters(prevChapters => {
+            const newchapters = new Set<number>(Array.from(prevChapters));
+            for (let i = 1; i <= chapterNumber; i++) {
+                newchapters.add(i);
             }
-            return newEpisodes;
+            return newchapters;
         });
+
+        // Appeler handleSavechapter ici pour sauvegarder l'épisode immédiatement après la sélection
+        if (session?.user) {
+            try {
+                await saveContent(session.user.id, id as string, chapterNumber, lastChapter);
+                console.log('chapter saved successfully');
+            } catch (error) {
+                console.error('Failed to save chapter', error);
+            }
+        } else {
+            console.log("No chapter selected or user not logged in");
+        }
     };
 
     const handleBackButtonClick = () => {
@@ -317,11 +310,10 @@ const ContentPage = () => {
                                     <div className='flex flex-row space-x-3'>
                                         <DropdownList
                                             episodes={lastChapter}
-                                            onSelectEpisode={handleEpisodeClick}
-                                            savedEpisodes={readEpisodes}
-                                            selectedEpisode={selectedEpisode}
+                                            onSelectEpisode={handlechapterClick}
+                                            savedEpisodes={readChapters}
+                                            selectedEpisode={selectedChapter}
                                         />
-                                        <FaRegCheckCircle size={25} className='mt-2 cursor-pointer' onClick={handleSaveEpisode} />
                                     </div>
                                 )}
                             </div>

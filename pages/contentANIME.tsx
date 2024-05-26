@@ -46,7 +46,7 @@ const ContentPage = () => {
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
     const { data: content } = useContent(id as string, type as string);
-    const { saveEpisode } = useSaveContent();
+    const { saveContent } = useSaveContent();
     const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "ANIME"); // Récupérer les favoris de l'utilisateur
@@ -189,25 +189,6 @@ const ContentPage = () => {
         }
     };
 
-    const handleSaveEpisode = async () => {
-        if (selectedEpisode !== null && session?.user) {
-            const newEpisodes = new Set<number>(); // Créer un nouvel ensemble pour stocker les nouveaux épisodes lus
-            for (let i = 1; i <= selectedEpisode; i++) {
-                newEpisodes.add(i); // Ajouter chaque épisode jusqu'à l'épisode sélectionné inclusivement
-            }
-            setReadEpisodes(new Set([...Array.from(newEpisodes)]));
-
-            try {
-                await saveEpisode(session.user.id, id as string, selectedEpisode, lastEpisode);
-                console.log('Episode saved successfully');
-            } catch (error) {
-                console.error('Failed to save episode', error);
-            }
-        } else {
-            console.log("No episode selected or user not logged in");
-        }
-    };
-
     const toggleDescription = () => {
         setExpanded(!expanded);
     };
@@ -236,12 +217,11 @@ const ContentPage = () => {
         return `${days} days ${hours} hours`;
     }
 
-    const handleEpisodeClick = (episodeNumber: number | null) => {
+    const handleEpisodeClick = async (episodeNumber: number | null) => {
         setSelectedEpisode(episodeNumber);
         if (episodeNumber === null) {
             return;
         }
-        handleSaveEpisode();
         setReadEpisodes(prevEpisodes => {
             const newEpisodes = new Set<number>(Array.from(prevEpisodes));
             for (let i = 1; i <= episodeNumber; i++) {
@@ -249,6 +229,18 @@ const ContentPage = () => {
             }
             return newEpisodes;
         });
+
+        // Appeler handleSaveEpisode ici pour sauvegarder l'épisode immédiatement après la sélection
+        if (session?.user) {
+            try {
+                await saveContent(session.user.id, id as string, episodeNumber, lastEpisode);
+                console.log('Episode saved successfully');
+            } catch (error) {
+                console.error('Failed to save episode', error);
+            }
+        } else {
+            console.log("No episode selected or user not logged in");
+        }
     };
 
     const handleBackButtonClick = () => {

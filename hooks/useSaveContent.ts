@@ -6,7 +6,7 @@ const useSaveContent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const saveEpisode = async (userId: string, contentId: string, lastContentWatch: number, lastContent: number) => {
+    const saveContent = async (userId: string, contentId: string, lastContentWatch: number, lastContent: number) => {
         setIsLoading(true);
         setError(null);
 
@@ -20,7 +20,7 @@ const useSaveContent = () => {
         }
     };
 
-    return { saveEpisode, isLoading, error };
+    return { saveContent, isLoading, error };
 };
 
 export default useSaveContent;

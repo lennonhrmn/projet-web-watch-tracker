@@ -168,124 +168,128 @@ const AccountPage = () => {
       }}
     >
       <Navbar />
-      {isEditing && (
-        <FaCircleArrowLeft
-          size={40}
-          className='absolute z-10 top-24 left-[30%] mr-5 text-white cursor-pointer'
-          onClick={handleBackButtonClick}
-        />
-      )}
-      <div className="text-center w-80 text-white bg-black bg-opacity-50 p-2 mt-20 rounded-lg">
-        <form>
-          <p className="text-4xl mb-3 text-left font-bold">
-            My account
-          </p>
-          <div className="mb-2 space-y-1">
-            <label htmlFor="email" className="block">Email</label>
-            {/* {isEditing ? (
-              <>
-                <Input
-                  id="email"
-                  type="email"
-                  onChange={(ev: any) => setNewEmail(ev.target.value)}
-                  value={newEmail} label={''} />
-                {emailError && <div className="text-xs text-red-500">{emailError}</div>}
-              </>
-            ) : ( */}
-            <Box>
-              <p className="text-black">
-                {email}
-              </p>
-            </Box>
-            {/* )} */}
-            <label htmlFor="firstName" className="block">First Name</label>
-            {isEditing ? (
-              <Input
-                id="firstName"
-                type="text"
-                onChange={(ev: any) => setFirstName(ev.target.value)}
-                value={firstName}
-                label={''}
-                autoComplete="given-name"
-              />
-            ) : (
+      <div className='flex gap-2 mt-16'>
+        <div className=''>
+          {isEditing && (
+            <FaCircleArrowLeft
+              size={40}
+              className='text-white cursor-pointer'
+              onClick={handleBackButtonClick}
+            />
+          )}
+        </div>
+        <div className="text-center w-80 text-white bg-black bg-opacity-50 p-2 rounded-lg">
+          <form>
+            <p className="text-4xl mb-3 text-left font-bold">
+              My account
+            </p>
+            <div className="mb-2 space-y-1">
+              <label htmlFor="email" className="block">Email</label>
+              {/* {isEditing ? (
+                <>
+                  <Input
+                    id="email"
+                    type="email"
+                    onChange={(ev: any) => setNewEmail(ev.target.value)}
+                    value={newEmail} label={''} />
+                  {emailError && <div className="text-xs text-red-500">{emailError}</div>}
+                </>
+              ) : ( */}
               <Box>
                 <p className="text-black">
-                  {firstName}
+                  {email}
                 </p>
               </Box>
-            )}
-            <label htmlFor="lastName" className="block">Last Name</label>
-            {isEditing ? (
-              <Input
-                id="lastName"
-                type="text"
-                onChange={(ev: any) => setLastName(ev.target.value)}
-                value={lastName}
-                label={''}
-                autoComplete="family-name"
-              />
-            ) : (
-              <Box>
-                <p className="text-black">
-                  {lastName}
-                </p>
-              </Box>
-            )}
-            {isEditing ? (
-              <>
-                <label htmlFor="newPassword" className="block">New Password</label>
+              {/* )} */}
+              <label htmlFor="firstName" className="block">First Name</label>
+              {isEditing ? (
                 <Input
-                  id="newPassword"
-                  type="password"
-                  onChange={(ev: any) => setNewPassword(ev.target.value)}
-                  value={newPassword}
+                  id="firstName"
+                  type="text"
+                  onChange={(ev: any) => setFirstName(ev.target.value)}
+                  value={firstName}
                   label={''}
-                  autoComplete="new-password"
-                >
-                  {showNewPassword ? (
-                    <FaEyeSlash className="cursor-pointer" onClick={toggleNewPasswordVisibility} />
-                  ) : (
-                    <FaEye className="cursor-pointer" onClick={toggleNewPasswordVisibility} />
-                  )}
-                </Input>
-                {passwordError && <div className="text-xs text-red-500">{passwordError}</div>}
-
-                <label htmlFor="confirmationNewPassword" className="block">Confirmation New Password</label>
+                  autoComplete="given-name"
+                />
+              ) : (
+                <Box>
+                  <p className="text-black">
+                    {firstName}
+                  </p>
+                </Box>
+              )}
+              <label htmlFor="lastName" className="block">Last Name</label>
+              {isEditing ? (
                 <Input
-                  id="confirmationNewPassword"
-                  type="password"
-                  onChange={(ev: any) => setConfirmationNewPassword(ev.target.value)}
-                  value={confirmationNewPassword}
+                  id="lastName"
+                  type="text"
+                  onChange={(ev: any) => setLastName(ev.target.value)}
+                  value={lastName}
                   label={''}
-                  autoComplete="new-password"
-                >
-                  {showConfirmNewPassword ? (
-                    <FaEyeSlash className="cursor-pointer" onClick={toggleConfirmNewPasswordVisibility} />
-                  ) : (
-                    <FaEye className="cursor-pointer" onClick={toggleConfirmNewPasswordVisibility} />
-                  )}
-                </Input>
-                {confirmPasswordError && <div className="text-xs text-red-500">{confirmPasswordError}</div>}
+                  autoComplete="family-name"
+                />
+              ) : (
+                <Box>
+                  <p className="text-black">
+                    {lastName}
+                  </p>
+                </Box>
+              )}
+              {isEditing ? (
+                <>
+                  <label htmlFor="newPassword" className="block">New Password</label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    onChange={(ev: any) => setNewPassword(ev.target.value)}
+                    value={newPassword}
+                    label={''}
+                    autoComplete="new-password"
+                  >
+                    {showNewPassword ? (
+                      <FaEyeSlash className="cursor-pointer" onClick={toggleNewPasswordVisibility} />
+                    ) : (
+                      <FaEye className="cursor-pointer" onClick={toggleNewPasswordVisibility} />
+                    )}
+                  </Input>
+                  {passwordError && <div className="text-xs text-red-500">{passwordError}</div>}
 
+                  <label htmlFor="confirmationNewPassword" className="block">Confirmation New Password</label>
+                  <Input
+                    id="confirmationNewPassword"
+                    type="password"
+                    onChange={(ev: any) => setConfirmationNewPassword(ev.target.value)}
+                    value={confirmationNewPassword}
+                    label={''}
+                    autoComplete="new-password"
+                  >
+                    {showConfirmNewPassword ? (
+                      <FaEyeSlash className="cursor-pointer" onClick={toggleConfirmNewPasswordVisibility} />
+                    ) : (
+                      <FaEye className="cursor-pointer" onClick={toggleConfirmNewPasswordVisibility} />
+                    )}
+                  </Input>
+                  {confirmPasswordError && <div className="text-xs text-red-500">{confirmPasswordError}</div>}
+
+                  <button
+                    type="button"
+                    onClick={handleSaveClick}
+                    className="px-4 py-1 bg-blue-500 text-white rounded"
+                  >
+                    Save
+                  </button></>
+              ) : (
                 <button
                   type="button"
-                  onClick={handleSaveClick}
+                  onClick={handleEditClick}
                   className="px-4 py-1 bg-blue-500 text-white rounded"
                 >
-                  Save
-                </button></>
-            ) : (
-              <button
-                type="button"
-                onClick={handleEditClick}
-                className="px-4 py-1 bg-blue-500 text-white rounded"
-              >
-                Edit
-              </button>
-            )}
-          </div>
-        </form>
+                  Edit
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

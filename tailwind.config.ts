@@ -19,6 +19,15 @@ const config: Config = {
         '96': '24rem',  // 384px
         // Add as many as you need...
       },
+      screens: {
+        'xs': '200px',
+        'sm2': '410px',
+        'sm1': '587px',
+        'md2': '720px',
+        'md1': '848px',
+        'lg': '992px',
+        'xl': '1280px',
+      },
     },
   },
   plugins: [],

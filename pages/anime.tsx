@@ -24,10 +24,10 @@ export async function getServerSideProps(context: NextPageContext) {
 }
 
 const AnimePage = () => {
-    // const [selectedGenre, setSelectedGenre] = useState("Genre");
-    // const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    //     setSelectedGenre(event.target.value);
-    // };
+    const [selectedGenre, setSelectedGenre] = useState("Genre");
+    const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedGenre(event.target.value);
+    };
 
     const { data: trendingAnime = [] } = useWatchList("trendingAnime");
     const { data: popularAnime = [] } = useWatchList("popularAnime");
@@ -36,17 +36,19 @@ const AnimePage = () => {
         <div className='bg-black relative'>
             <Navbar />
             <PhotoALaUne category="anime" />
-            <div className="absolute top-24 z-10 flex gap-8 ml-16 ">
-                <h1 className="text-white sm:text-2xl md:text-5xl">Anime</h1>
-                {/* <select id="genreSelect"
-                    className="cursor-pointer sm:text-1xl md:text-2xl mt-4 text-white bg-transparent hover:text-gray-300 translation"
-                    onChange={handleGenreChange}
-                    value={selectedGenre}>
-                    <option value="Genre" className="bg-transparent">Genre</option>
-                    <option value="anime" className="bg-transparent">Shonen</option>
-                </select> */}
+            <div className="absolute xl:top-24 lg:top-24 md1:top-24 md2:top-20 sm1:top-20 sm2:top-20 xs:top-16 z-10 flex gap-8 ml-16 ">
+                <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Anime</h1>
+                <div className='relative'>
+                    <select id="genreSelect"
+                        className="cursor-pointer xs:text-[10px] sm2:text-1md sm1:text-1xl md2:text-1xl md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl absolute bottom-0 text-white bg-transparent hover:text-gray-300 translation"
+                        onChange={handleGenreChange}
+                        value={selectedGenre}>
+                        <option value="Genre" className="bg-transparent">Genre</option>
+                        <option value="anime" className="bg-transparent">Shonen</option>
+                    </select>
+                </div>
             </div>
-            <div className='absolute z-11 ml-3 top-80 translate-y-32'>
+            <div className='absolute z-11 ml-3 xl:top-64 lg:top-64 md1:top-64 md2:top-60 sm1:top-52 sm2:top-32 xs:top-12 top-56 translate-y-32'>
                 <WatchList title="Trending now" data={trendingAnime} type="ANIME" />
                 <WatchList title="Popular now" data={popularAnime} type="ANIME" />
             </div>

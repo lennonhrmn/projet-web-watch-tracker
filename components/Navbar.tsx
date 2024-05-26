@@ -84,19 +84,19 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-        <div className="flex-grow flex justify-center">
+        <div className="flex space-x-4">
           <div className="relative">
-            <div onClick={toggleMobileMenu} className="sm:hidden flex items-center cursor-pointer">
+            <div onClick={toggleMobileMenu} className="sm:hidden flex cursor-pointer">
               <RxHamburgerMenu className="text-white transition" />
             </div>
             {showMobileMenu && (
-              <div className="absolute top-10 left-1/2 transform -translate-x-1/2">
+              <div className="absolute top-10 right-0">
                 <MobileMenu visible={showMobileMenu} />
               </div>
             )}
           </div>
+          <SearchBar />
         </div>
-        <SearchBar />
       </div>
     </nav>
   );

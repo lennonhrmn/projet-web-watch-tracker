@@ -27,22 +27,23 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
 
     return (
         <div className="
-        bg-black
-        w-56
-        flex
-        py-5
-        flex-col
-        border-2
-        border-gray-800
-        flex
-      ">
+            bg-black
+            w-28
+            flex
+            py-3
+            flex-col
+            border-2
+            border-gray-800
+            relative
+            z-50
+        ">
             <div className="flex flex-col gap-4">
                 <div className="px-3 text-center text-white hover:underline">
                     <Link href="/library">
                         Library
                     </Link>
                 </div>
-                <div className="px-3 text-center text-white hover:underline">
+                <div className="px-3 text-center text-white hover:underline relative">
                     <button
                         onClick={toggleDropdown}
                         className="w-full bg-transparent cursor-pointer hover:text-gray-300 transition"
@@ -50,7 +51,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
                         Category
                     </button>
                     {isDropdownOpen && (
-                        <div className="absolute left-0 mt-2 w-full bg-white text-black">
+                        <div className="absolute left-0 mt-2 w-full bg-white text-black border border-gray-800">
                             <div
                                 className="px-4 py-2 cursor-pointer hover:bg-gray-200"
                                 onClick={() => handleCategoryChange("anime")}
@@ -73,7 +74,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
                 </div>
                 <div
                     onClick={() => signOut({ callbackUrl: "/auth" })}
-                    className="px-3 text-center text-white hover:underline"
+                    className="px-3 text-center text-white hover:underline cursor-pointer"
                 >
                     Sign out
                 </div>

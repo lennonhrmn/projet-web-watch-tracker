@@ -40,11 +40,11 @@ const MangaPage = () => {
                 <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Manga</h1>
                 <div className='relative'>
                     <select id="genreSelect"
-                        className="cursor-pointer xs:text-[10px] sm2:text-1md sm1:text-1xl md2:text-1xl md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl absolute bottom-0 text-white bg-transparent hover:text-gray-300 translation"
+                        className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl absolute bottom-0 text-white bg-transparent hover:text-gray-300 translation"
                         onChange={handleGenreChange}
                         value={selectedGenre}>
                         <option value="Genre" className="bg-transparent">Genre</option>
-                        <option value="manga" className="bg-transparent">Shonen</option>
+                        <option value="Manga" className="bg-transparent">Shonen</option>
                     </select>
                 </div>
             </div>

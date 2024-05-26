@@ -27,7 +27,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
         setNumCols(4);
       } else if (screenWidth >= 587) {
         setNumCols(3);
-      } else if (screenWidth >= 410) {
+      } else if (screenWidth >= 400) {
         setNumCols(2);
       } else {
         setNumCols(1);

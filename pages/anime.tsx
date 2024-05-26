@@ -36,7 +36,7 @@ const AnimePage = () => {
         <div className='bg-black relative'>
             <Navbar />
             <PhotoALaUne category="anime" />
-            <div className="absolute xl:top-24 lg:top-24 md1:top-24 md2:top-20 sm1:top-20 sm2:top-20 xs:top-16 z-10 flex gap-8 ml-16 ">
+            <div className="absolute xl:top-24 lg:top-24 md1:top-24 md2:top-20 sm1:top-20 sm2:top-20 xs:top-16 z-10 flex gap-8 xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-8 sm2:ml-5 xs:ml-5 ">
                 <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Anime</h1>
                 <div className='relative'>
                     <select id="genreSelect"
@@ -48,7 +48,7 @@ const AnimePage = () => {
                     </select>
                 </div>
             </div>
-            <div className='absolute z-11 ml-3 xl:top-64 lg:top-64 md1:top-64 md2:top-60 sm1:top-52 sm2:top-32 xs:top-12 top-56 translate-y-32'>
+            <div className='absolute z-11 ml-3 xl:top-64 lg:top-64 md1:top-64 md2:top-60 sm1:top-52 sm2:top-32 xs:top-12 flex flex-col justify-center translate-y-32'>
                 <WatchList title="Trending now" data={trendingAnime} type="ANIME" />
                 <WatchList title="Popular now" data={popularAnime} type="ANIME" />
             </div>

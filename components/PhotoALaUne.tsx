@@ -26,8 +26,8 @@ const PhotoALaUne = ({ category }: PhotoALaUneProps) => {
             </div>
             <div className="
                     absolute
-                    xl:top-[25%] lg:top-[28%] md1:top-[33%] md2:top-[35%] sm1:top-[38%] sm2:top-[45%] xs:top-[40%]
-                    lg:ml-16 md:ml-16 sm:ml-16 ml-16
+                    xl:top-[25%] lg:top-[28%] md1:top-[33%] md2:top-[35%] sm1:top-[38%] sm2:top-[50%] xs:top-[43%]
+                    xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-8 sm2:ml-5 xs:ml-5
                     ">
                 <p className="
                         text-white

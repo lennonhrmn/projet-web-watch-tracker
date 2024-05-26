@@ -241,6 +241,7 @@ const ContentPage = () => {
         if (episodeNumber === null) {
             return;
         }
+        handleSaveEpisode();
         setReadEpisodes(prevEpisodes => {
             const newEpisodes = new Set<number>(Array.from(prevEpisodes));
             for (let i = 1; i <= episodeNumber; i++) {
@@ -321,7 +322,6 @@ const ContentPage = () => {
                                             savedEpisodes={readEpisodes}
                                             selectedEpisode={selectedEpisode}
                                         />
-                                        <FaRegCheckCircle size={25} className='mt-2 cursor-pointer' onClick={handleSaveEpisode} />
                                     </div>
                                 )}
                             </div>

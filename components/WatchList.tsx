@@ -27,7 +27,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
         setNumCols(4);
       } else if (screenWidth >= 587) {
         setNumCols(3);
-      } else if (screenWidth >= 397) {
+      } else if (screenWidth >= 390) {
         setNumCols(2);
       } else {
         setNumCols(1);
@@ -90,7 +90,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
             <WatchCard key={item?.id ?? 0} data={item} type={type} />
           ))}
         </div>
-        <FaRegArrowAltCircleRight className={`text-white ml-6 mt-24 cursor-pointer ${!canGoNext && 'opacity-50'}`} size={30} onClick={handleNextClick} />
+        <FaRegArrowAltCircleRight className={`text-white ml-6 sm2:ml-9 mt-24 cursor-pointer ${!canGoNext && 'opacity-50'}`} size={30} onClick={handleNextClick} />
       </div>
     </div>
   )

@@ -56,7 +56,7 @@ const Navbar = () => {
         `}
       >
         <div className="flex items-center">
-          <img className="h-8" src="/images/logo/logo2.png" alt="logo" />
+          <img className="h-5" src="/images/logo/logo.png" alt="logo" />
           <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
             <Link href="/library">
               <NavbarItem label="Library" />

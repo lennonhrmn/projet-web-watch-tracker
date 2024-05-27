@@ -45,7 +45,7 @@ const ContentPage = () => {
     let { id, type } = router.query;
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
-    const { data: content } = useContent(id as string, type as string);
+    const { data: content } = useContent(id as string, type as string || "MANGA");
     const { saveContent } = useSaveContent();
     const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
@@ -69,7 +69,7 @@ const ContentPage = () => {
         if (router.isReady && isMounted && (!id || !type)) {
             router.push('/library');
         } else if (id && type) {
-            mutate(`api/content${type}?id=${id}`);
+            mutate(`api/aniList/content?id=${id}&type=${type}`);
         }
     }, [id, mutate, router, isMounted, type]);
 

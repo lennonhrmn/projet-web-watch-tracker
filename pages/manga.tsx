@@ -29,13 +29,14 @@ const MangaPage = () => {
         setSelectedGenre(event.target.value);
     };
 
-    const { data: trendingManga = [] } = useWatchList("trendingManga");
-    const { data: popularManga = [] } = useWatchList("popularManga");
+    const { data: trendingManga = [] } = useWatchList("trendingManga", "MANGA");
+    const { data: popularManga = [] } = useWatchList("popularManga", "MANGA");
+    const { data: finishedManga = [] } = useWatchList("finishedContent", "MANGA");
 
     return (
         <>
             <Navbar />
-            <div className="flex flex-row gap-8 mt-[10vh] mx-[5vw] relative z-10">
+            <div className="flex flex-row gap-8 mt-[10vh] mx-[3.2vw] relative z-10">
                 <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Manga</h1>
                 <select id="genreSelect"
                     className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl text-white bg-transparent hover:text-gray-300 translation"
@@ -52,6 +53,7 @@ const MangaPage = () => {
             <div className='flex flex-col justify'>
                 <WatchList title="Trending now" data={trendingManga} type="MANGA" />
                 <WatchList title="Popular now" data={popularManga} type="MANGA" />
+                <WatchList title="Finished" data={finishedManga} type="MANGA" />
             </div>
         </>
     );

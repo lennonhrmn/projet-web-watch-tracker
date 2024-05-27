@@ -29,14 +29,15 @@ const AnimePage = () => {
         setSelectedGenre(event.target.value);
     };
 
-    const { data: trendingAnime = [] } = useWatchList("trendingAnime");
-    const { data: popularAnime = [] } = useWatchList("popularAnime");
+    const { data: trendingAnime = [] } = useWatchList("trendingAnime", "ANIME");
+    const { data: popularAnime = [] } = useWatchList("popularAnime", "ANIME");
+    const { data: finishedAnime = [] } = useWatchList("finishedContent", "ANIME");
 
     return (
         <>
             <Navbar />
             <div className="flex flex-row gap-8 mt-[10vh] mx-[3.2vw] relative z-10">
-                <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Manga</h1>
+                <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Anime</h1>
                 <select id="genreSelect"
                     className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl text-white bg-transparent hover:text-gray-300 translation"
                     onChange={handleGenreChange}
@@ -48,10 +49,11 @@ const AnimePage = () => {
                     <option value="manga" className="bg-transparent">Josei</option>
                 </select>
             </div>
-            <PhotoALaUne category="manga" />
+            <PhotoALaUne category="anime" />
             <div className='flex flex-col justify'>
                 <WatchList title="Trending now" data={trendingAnime} type="ANIME" />
                 <WatchList title="Popular now" data={popularAnime} type="ANIME" />
+                <WatchList title="Finished" data={finishedAnime} type="ANIME" />
             </div>
         </>
     );

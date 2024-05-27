@@ -3,7 +3,6 @@ import React, { useCallback } from "react";
 import useFavorite from "@/hooks/useFavorite";
 import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
 import { useSession } from "next-auth/react";
-import favorite from "@/pages/api/favorite";
 
 interface FavoriteButtonProps {
     contentId: string;
@@ -20,15 +19,16 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
         favoriteContent = favorites.find((favorite: { id: any }) => favorite.id == contentId)
     }
 
-    const isFavorite = favoriteContent !== undefined;
+    let isFavorite = favoriteContent !== undefined;
 
     const toggleFavorite = useCallback(async () => {
         try {
-            let response;
+            contentId = `${contentId}`
+
             if (isFavorite) {
-                response = await axios.delete("/api/favorite", { data: { contentId, session: currentSession } });
+                await axios.delete("/api/favorite", { data: { contentId, session: currentSession } });
             } else {
-                response = await axios.post("/api/favorite", { contentId, type, session: currentSession });
+                await axios.post("/api/favorite", { contentId, type, session: currentSession });
             }
 
             // Mettre à jour les favoris après l'action

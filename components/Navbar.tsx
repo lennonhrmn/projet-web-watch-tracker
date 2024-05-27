@@ -7,7 +7,7 @@ import NavbarItem from './NavbarItem';
 import MobileMenu from './MobileMenu';
 import SearchBar from './searchBar';
 
-const TOP_OFFSET = 66;
+const TOP_OFFSET = 54;
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -16,11 +16,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY >= TOP_OFFSET) {
-        setShowBackground(true);
-      } else {
-        setShowBackground(false);
-      }
+      setShowBackground(window.scrollY >= TOP_OFFSET);
     };
 
     window.addEventListener('scroll', handleScroll);

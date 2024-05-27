@@ -1,9 +1,6 @@
-import React, { lazy } from "react";
-// const FavoriteButton = lazy(() => import("./FavoriteButton"));
-// import FavoriteButton from "./FavoriteButton";
 import { useRouter } from "next/router";
 import { FaHeart } from "react-icons/fa";
-// import useCurrentUser from "@/hooks/useCurrentUser";
+import FavoriteButton from "./FavoriteButton";
 
 interface WatchCardProps {
   data: Record<string, any>;
@@ -21,23 +18,28 @@ const WatchCard: React.FC<WatchCardProps> = ({ data, type }) => {
   };
 
   return (
-    <div className="group bg-zinc-900 col-span relative rounded-md w-40 h-38">
+    <div className="group bg-zinc-900 rounded-md overflow-hidden shadow-md relative not-draggable">
       <img src={data.coverImage.large}
         alt={data.title.english}
         onClick={handleCardClick}
-        className="cursor-pointer object-fill transition duration shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-full h-full" />
-      <div className="opacity-0 absolute top-0 transition duration-200 z-10 invisible sm:visible delay-300 scale-0 group-hover:scale-110 group-hover:translate-y-[-4vw] group-hover:opacity-100 ">
-        <img src={data.coverImage.large} alt={data.title.english} onClick={handleCardClick} className="cursor-pointer object-contain transition duration shadow-xl rounded-t-md w-40 h-38 " />
-        <div className="z-10 bg-zinc-800 p-2 lg:p-2 absolute w-full transition shadow-md rounded-b-md">
-          {/* <div className="flex flex-row items-center gap-3">
-            <FavoriteButton contentId={data?.id ?? 0}/> 
-            <FavoriteButton contentId={typeof data?.id === 'string' ? data?.id : ''} type = {type}/>
+        className="cursor-pointer object-fill w-full h-full group-hover:opacity-0 group-hover:-translate-y-[20%] transition-all duration-300" draggable="false" />
+
+      <div className="absolute bottom-0 w-full h-full flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-500">
+        <img src={data.coverImage.large}
+          alt={data.title.english}
+          onClick={handleCardClick}
+          className="cursor-pointer object-fill w-full h-full" draggable="false" />
+        <div className="bg-zinc-800 p-2">
+          <div className="flex flex-row items-center justify-between mb-2 gap-2">
+            <p className="text-xs text-white truncate">{data.title.english}</p>
+            <div className="flex flex-row space-x-2 mt-1">
+              <p className="text-xs text-white">{data.popularity}</p>
+              <FaHeart className='text-red-500 text-1xl' />
+            </div>
+          </div>
+          <div className="flex flex-row items-center gap-3">
+            <FavoriteButton contentId={data.id} type={type} />
             <p className="text-xs text-white">Add to library</p>
-          </div> */}
-          <p className="text-xs text-white">{data.title.english}</p>
-          <div className="flex flex-row space-x-2 mt-1">
-            <p className="text-xs text-white">{data.popularity}</p>
-            <FaHeart className='text-red-500 text-1xl' />
           </div>
         </div>
       </div>

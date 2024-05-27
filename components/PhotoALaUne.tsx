@@ -21,14 +21,10 @@ const PhotoALaUne = ({ category }: PhotoALaUneProps) => {
 
     return (
         <div>
-            <div className="relative">
-                <video className="w-full" poster={data?.imageUrl} />
+            <div className="absolute top-0 gradient-bg-bottom" style={{ width: "100%" }}>
+                <video className="alaune w-full h-full object-cover -z-10" autoPlay loop muted poster={data?.imageUrl} />
             </div>
-            <div className="
-                    absolute
-                    xl:top-[25%] lg:top-[28%] md1:top-[33%] md2:top-[35%] sm1:top-[38%] sm2:top-[50%] xs:top-[43%]
-                    xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-8 sm2:ml-5 xs:ml-5
-                    ">
+            <div className="m-10 p-5 relative">
                 <p className="
                         text-white
                         xl:text-4xl lg:text-4xl md1:text-4xl md2:text-4xl sm1:text-2xl sm2:text-1xl xs:text-[10px] 

@@ -33,26 +33,27 @@ const MangaPage = () => {
     const { data: popularManga = [] } = useWatchList("popularManga");
 
     return (
-        <div className='bg-black relative'>
+        <>
             <Navbar />
-            <PhotoALaUne category="manga" />
-            <div className="absolute xl:top-24 lg:top-24 md1:top-24 md2:top-20 sm1:top-20 sm2:top-20 xs:top-16 z-10 flex gap-8 xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-8 sm2:ml-5 xs:ml-5 ">
+            <div className="flex flex-row gap-8 mt-[10vh] mx-[5vw] relative z-10">
                 <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Manga</h1>
-                <div className='relative'>
-                    <select id="genreSelect"
-                        className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl absolute bottom-0 text-white bg-transparent hover:text-gray-300 translation"
-                        onChange={handleGenreChange}
-                        value={selectedGenre}>
-                        <option value="Genre" className="bg-transparent">Genre</option>
-                        <option value="Manga" className="bg-transparent">Shonen</option>
-                    </select>
-                </div>
+                <select id="genreSelect"
+                    className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl text-white bg-transparent hover:text-gray-300 translation"
+                    onChange={handleGenreChange}
+                    value={selectedGenre}>
+                    <option value="Genre" className="bg-transparent hidden">Genre</option>
+                    <option value="manga" className="bg-transparent">Shonen</option>
+                    <option value="manga" className="bg-transparent">Seinen</option>
+                    <option value="manga" className="bg-transparent">Shojo</option>
+                    <option value="manga" className="bg-transparent">Josei</option>
+                </select>
             </div>
-            <div className='absolute z-11 ml-3 xl:top-64 lg:top-64 md1:top-64 md2:top-60 sm1:top-52 sm2:top-32 xs:top-12 flex flex-col justify-center translate-y-32'>
+            <PhotoALaUne category="manga" />
+            <div className='flex flex-col justify'>
                 <WatchList title="Trending now" data={trendingManga} type="MANGA" />
                 <WatchList title="Popular now" data={popularManga} type="MANGA" />
             </div>
-        </div>
+        </>
     );
 };
 

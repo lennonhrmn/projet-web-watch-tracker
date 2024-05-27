@@ -253,7 +253,7 @@ const ContentPage = () => {
             <Navbar />
             <div className='relative'>
                 <img src={bannerSrc}
-                    className='w-full h-auto object-cover -z-1 opacity-20'
+                    className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom'
                     style={{ maxHeight: '400px' }} />
                 <div className='
                 absolute 

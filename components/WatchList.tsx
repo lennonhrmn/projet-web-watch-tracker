@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { isEmpty } from 'lodash';
+import React from 'react';
 import WatchCard from './WatchCard';
-import { FaRegArrowAltCircleRight, FaRegArrowAltCircleLeft } from "react-icons/fa";
+import { useSwipeable } from 'react-swipeable';
 
 interface WatchListProps {
   data: Record<string, any>[];
@@ -10,90 +9,40 @@ interface WatchListProps {
 }
 
 const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
-  const [startIndex, setStartIndex] = useState(0);
-  const [numCols, setNumCols] = useState(6); // Nombre de colonnes par défaut
+  const ref = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleResize() {
-      // Détecter la largeur de l'écran et ajuster le nombre de colonnes en conséquence
-      const screenWidth = window.innerWidth;
-      if (screenWidth >= 1280) {
-        setNumCols(7);
-      } else if (screenWidth >= 992) {
-        setNumCols(6);
-      } else if (screenWidth >= 848) {
-        setNumCols(5);
-      } else if (screenWidth >= 720) {
-        setNumCols(4);
-      } else if (screenWidth >= 587) {
-        setNumCols(3);
-      } else if (screenWidth >= 390) {
-        setNumCols(2);
-      } else {
-        setNumCols(1);
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (ref.current) {
+        ref.current.scrollBy({ left: 900, behavior: 'smooth' });
       }
-    }
-
-    handleResize(); // Appeler une fois pour l'initialisation
-    window.addEventListener('resize', handleResize); // Ajouter un écouteur d'événement de redimensionnement de fenêtre
-
-    return () => window.removeEventListener('resize', handleResize); // Supprimer l'écouteur d'événement lors du démontage du composant
-  }, []);
-
-  if (isEmpty(data)) {
-    return null;
-  }
-
-  // Calculez le nombre maximal de pages complètes
-  const maxStartIndex = Math.floor((data.length - 1) / numCols) * numCols;
-  const canGoNext = startIndex < maxStartIndex;
-  const canGoPrev = startIndex > 0;
-
-  const handleNextClick = () => {
-    if (canGoNext) {
-      setStartIndex(prevStartIndex => Math.min(prevStartIndex + numCols, maxStartIndex));
-    }
-  };
-
-  const handlePrevClick = () => {
-    if (canGoPrev) {
-      setStartIndex(prevStartIndex => Math.max(prevStartIndex - numCols, 0));
-    }
-  };
-
-  const getGridColsClass = (cols: number) => {
-    switch (cols) {
-      case 7:
-        return 'xl:grid-cols-7 lg:grid-cols-6 md1:grid-cols-5 md2:grid-cols-4 sm1:grid-cols-3 sm2:grid-cols-2 grid-cols-1';
-      case 6:
-        return 'xl:grid-cols-7 lg:grid-cols-6 md1:grid-cols-5 md2:grid-cols-4 sm1:grid-cols-3 sm2:grid-cols-2 grid-cols-1';
-      case 5:
-        return 'xl:grid-cols-7 lg:grid-cols-6 md1:grid-cols-5 md2:grid-cols-4 sm1:grid-cols-3 sm2:grid-cols-2 grid-cols-1';
-      case 3:
-        return 'xl:grid-cols-7 lg:grid-cols-6 md1:grid-cols-5 md2:grid-cols-4 sm1:grid-cols-3 sm2:grid-cols-2 grid-cols-1';
-      default:
-        return 'xl:grid-cols-7 lg:grid-cols-6 md1:grid-cols-5 md2:grid-cols-4 sm1:grid-cols-3 sm2:grid-cols-2 grid-cols-1';
-    }
-  };
+    },
+    onSwipedRight: () => {
+      if (ref.current) {
+        ref.current.scrollBy({ left: -900, behavior: 'smooth' });
+      }
+    },
+    preventScrollOnSwipe: true,
+    trackMouse: true,
+  });
 
   return (
-    <div className='px-4 mb-5 space-y-2 mt-2'>
+    <div className='mb-5 space-y-2 mt-2'>
       <div className="rounded-lg bg-white p-1 inline-block ml-10 opacity-90">
         <p className='text-black xs:text-[10px] sm2:text-xs sm1:text-md md2:text-md md1:text-xl lg:text-xl xl:text-xl font-semibold'>
           {title}
         </p>
       </div>
-      <div className='flex flex-row'>
-        <FaRegArrowAltCircleLeft className={`text-white mr-2 mt-24 cursor-pointer ${!canGoPrev && 'opacity-50'}`} size={30} onClick={handlePrevClick} />
-        <div className={`grid ${getGridColsClass(numCols)} gap-3`}>
-          {data.slice(startIndex, startIndex + numCols).map((item) => (
-            <WatchCard key={item?.id ?? 0} data={item} type={type} />
-          ))}
-        </div>
-        <FaRegArrowAltCircleRight className={`text-white ml-6 sm2:ml-9 mt-24 cursor-pointer ${!canGoNext && 'opacity-50'}`} size={30} onClick={handleNextClick} />
+      <div
+        {...handlers}
+        ref={ref}
+        className='grid grid-flow-col auto-cols-[15%] gap-[1vw] overflow-x-scroll no-scrollbar px-5'>
+        {data && data.map((item) => (
+          <WatchCard key={item?.id ?? 0} data={item} type={type} />
+        ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default WatchList;

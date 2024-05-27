@@ -29,6 +29,7 @@ const AnimePage = () => {
     const [navbarOffset, setNavbarOffset] = useState(0);
     const trendingRef = useRef<HTMLDivElement>(null);
     const popularRef = useRef<HTMLDivElement>(null);
+    const newContentRef = useRef<HTMLDivElement>(null);
     const finishedRef = useRef<HTMLDivElement>(null);
     const actionRef = useRef<HTMLDivElement>(null);
     const adventureRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,7 @@ const AnimePage = () => {
 
     const { data: trendingAnime = [] } = useWatchList("trendingAnime", "ANIME");
     const { data: popularAnime = [] } = useWatchList("popularAnime", "ANIME");
+    const { data: newContentAnime = [] } = useWatchList("newContent", "ANIME");
     const { data: finishedAnime = [] } = useWatchList("finishedContent", "ANIME");
     const { data: actionContent = [] } = useWatchList("genreContent", "ANIME", "Action");
     const { data: adventureContent = [] } = useWatchList("genreContent", "ANIME", "Adventure");
@@ -133,6 +135,7 @@ const AnimePage = () => {
             <div className='flex flex-col justify'>
                 <WatchList title="Trending now" data={trendingAnime} type="ANIME" listRef={trendingRef} />
                 <WatchList title="Popular now" data={popularAnime} type="ANIME" listRef={popularRef} />
+                <WatchList title="New Release" data={newContentAnime} type="ANIME" listRef={newContentRef} />
                 <WatchList title="Finished" data={finishedAnime} type="ANIME" listRef={finishedRef} />
                 <WatchList title="Action" data={actionContent} type="ANIME" listRef={actionRef} />
                 <WatchList title="Adventure" data={adventureContent} type="ANIME" listRef={adventureRef} />

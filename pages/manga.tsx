@@ -29,6 +29,7 @@ const MangaPage = () => {
     const [navbarOffset, setNavbarOffset] = useState(0);
     const trendingRef = useRef<HTMLDivElement>(null);
     const popularRef = useRef<HTMLDivElement>(null);
+    const newContentRef = useRef<HTMLDivElement>(null);
     const finishedRef = useRef<HTMLDivElement>(null);
     const actionRef = useRef<HTMLDivElement>(null);
     const adventureRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,7 @@ const MangaPage = () => {
 
     const { data: trendingManga = [] } = useWatchList("trendingManga", "MANGA");
     const { data: popularManga = [] } = useWatchList("popularManga", "MANGA");
+    const { data: newContentManga = [] } = useWatchList("newContent", "MANGA");
     const { data: finishedManga = [] } = useWatchList("finishedContent", "MANGA");
     const { data: actionContent = [] } = useWatchList("genreContent", "MANGA", "Action");
     const { data: adventureContent = [] } = useWatchList("genreContent", "MANGA", "Adventure");
@@ -135,6 +137,7 @@ const MangaPage = () => {
             <div className='flex flex-col justify'>
                 <WatchList title="Trending now" data={trendingManga} type="MANGA" listRef={trendingRef} />
                 <WatchList title="Popular now" data={popularManga} type="MANGA" listRef={popularRef} />
+                <WatchList title="New Release" data={newContentManga} type="MANGA" listRef={newContentRef} />
                 <WatchList title="Finished" data={finishedManga} type="MANGA" listRef={finishedRef} />
                 <WatchList title="Action" data={actionContent} type="MANGA" listRef={actionRef} />
                 <WatchList title="Adventure" data={adventureContent} type="MANGA" listRef={adventureRef} />

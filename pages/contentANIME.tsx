@@ -19,6 +19,7 @@ import useFavorite from '@/hooks/useFavorite';
 import useFetchLastContent from '@/hooks/useFetchLastContent';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { MdDelete } from 'react-icons/md';
+import { Triangle } from 'react-loader-spinner';
 
 
 interface Comment {
@@ -45,7 +46,7 @@ const ContentPage = () => {
     let { id, type } = router.query;
     const { data: user } = useCurrentUser(); // Récupérer les données de l'utilisateur connecté
     const { data: session, status: sessionStatus } = useSession(); // Récupérer les données de session de l'utilisateur connecté
-    const { data: content } = useContent(id as string, type as string || "ANIME");
+    const { data: content, isLoading } = useContent(id as string, type as string || "ANIME");
     const { saveContent } = useSaveContent();
     const { lastContentWatched } = useFetchLastContent(user?.id as string, id as string);
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris

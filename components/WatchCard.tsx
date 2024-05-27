@@ -33,18 +33,18 @@ const WatchCard: React.FC<WatchCardProps> = ({ data, type }) => {
   return (
     <div className="group bg-zinc-900 rounded-md overflow-hidden shadow-md relative not-draggable">
       <img src={data.coverImage.large}
-        alt={data.title.english}
+        alt={data.title.english || data.title.romaji}
         onClick={handleCardClick}
         className="cursor-pointer object-fill w-full h-full group-hover:opacity-0 group-hover:-translate-y-[20%] transition-all duration-300" draggable="false" />
 
       <div className="absolute bottom-0 w-full h-full flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-500">
         <img src={data.coverImage.large}
-          alt={data.title.english}
+          alt={data.title.english || data.title.romaji}
           onClick={handleCardClick}
           className="cursor-pointer object-fill w-full h-full" draggable="false" />
         <div className="bg-zinc-800 p-2">
           <div className="flex flex-row items-center justify-between mb-2 gap-2">
-            <p className="text-xs text-white truncate">{data.title.english}</p>
+            <p className="text-xs text-white truncate">{data.title.english || data.title.romaji}</p>
             <div className="flex flex-row space-x-2 mt-1">
               <p className="text-xs text-white">{data.popularity}</p>
               <FaHeart className='text-red-500 text-1xl' />

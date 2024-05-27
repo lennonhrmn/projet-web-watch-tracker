@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
 import PhotoALaUne from '@/components/PhotoALaUne';
-import useWatchList from '@/hooks/useWatchList';
+import { useWatchList } from '@/hooks/useWatchList';
 import React, { useEffect, useRef, useState } from 'react';
 import WatchList from '@/components/WatchList';
 import { getSession } from 'next-auth/react';
@@ -112,7 +112,7 @@ const MangaPage = () => {
     return (
         <>
             <Navbar />
-            <div className="flex flex-row gap-8 mt-[10vh] mx-[3.2vw] relative z-10">
+            <div className="flex flex-row gap-8 mt-[10vh] ml-5 relative z-10">
                 <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Manga</h1>
                 <select
                     id="genreSelect"
@@ -135,20 +135,20 @@ const MangaPage = () => {
             </div>
             <PhotoALaUne category="manga" />
             <div className='flex flex-col justify'>
-                <WatchList title="Trending now" data={trendingManga} type="MANGA" listRef={trendingRef} />
-                <WatchList title="Popular now" data={popularManga} type="MANGA" listRef={popularRef} />
-                <WatchList title="New Release" data={newContentManga} type="MANGA" listRef={newContentRef} />
-                <WatchList title="Finished" data={finishedManga} type="MANGA" listRef={finishedRef} />
-                <WatchList title="Action" data={actionContent} type="MANGA" listRef={actionRef} />
-                <WatchList title="Adventure" data={adventureContent} type="MANGA" listRef={adventureRef} />
-                <WatchList title="Comedy" data={comedyContent} type="MANGA" listRef={comedyRef} />
-                <WatchList title="Drama" data={dramaContent} type="MANGA" listRef={dramaRef} />
-                <WatchList title="Ecchi" data={ecchiContent} type="MANGA" listRef={ecchiRef} />
-                <WatchList title="Fantasy" data={fantasyContent} type="MANGA" listRef={fantasyRef} />
-                <WatchList title="Romance" data={romanceContent} type="MANGA" listRef={romanceRef} />
-                <WatchList title="Sports" data={sportsContent} type="MANGA" listRef={sportsRef} />
-                <WatchList title="Supernatural" data={supernaturalContent} type="MANGA" listRef={supernaturalRef} />
-                <WatchList title="Shōnen" data={shounenContent} type="MANGA" listRef={shounenRef} />
+                <WatchList title="Trending now" data={trendingManga} type="MANGA" category="trendingManga" listRef={trendingRef} />
+                <WatchList title="Popular now" data={popularManga} type="MANGA" category="popularManga" listRef={popularRef} />
+                <WatchList title="New Release" data={newContentManga} type="MANGA" category="newContent" listRef={newContentRef} />
+                <WatchList title="Finished" data={finishedManga} type="MANGA" category="finishedContent" listRef={finishedRef} />
+                <WatchList title="Action" data={actionContent} type="MANGA" category="genreContent" genre="Action" listRef={actionRef} />
+                <WatchList title="Adventure" data={adventureContent} type="MANGA" category="genreContent" genre="Adventure" listRef={adventureRef} />
+                <WatchList title="Comedy" data={comedyContent} type="MANGA" category="genreContent" genre="Comedy" listRef={comedyRef} />
+                <WatchList title="Drama" data={dramaContent} type="MANGA" category="genreContent" genre="Drama" listRef={dramaRef} />
+                <WatchList title="Ecchi" data={ecchiContent} type="MANGA" category="genreContent" genre="Ecchi" listRef={ecchiRef} />
+                <WatchList title="Fantasy" data={fantasyContent} type="MANGA" category="genreContent" genre="Fantasy" listRef={fantasyRef} />
+                <WatchList title="Romance" data={romanceContent} type="MANGA" category="genreContent" genre="Romance" listRef={romanceRef} />
+                <WatchList title="Sports" data={sportsContent} type="MANGA" category="genreContent" genre="Sports" listRef={sportsRef} />
+                <WatchList title="Supernatural" data={supernaturalContent} type="MANGA" category="genreContent" genre="Supernatural" listRef={supernaturalRef} />
+                <WatchList title="Shōnen" data={shounenContent} type="MANGA" category="tagContent" genre="Shounen" listRef={shounenRef} />
             </div>
         </>
     );

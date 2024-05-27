@@ -8,9 +8,7 @@ const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
-    if (req.method !== 'GET') {
-        return res.status(405).end();
-    }
+    if (req.method !== 'GET') return res.status(405).end();
 
     const { id, type } = req.query;
 

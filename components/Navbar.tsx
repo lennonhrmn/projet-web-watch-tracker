@@ -39,8 +39,7 @@ const Navbar = () => {
     <nav className="w-full top-0 fixed z-40">
       <div
         className={`
-          px-4
-          xl:px-16 lg:px-16 md1:px-16 md2:px-16 sm1:px-6 sm2:px-5 xs:px-5
+          px-5
           py-6
           flex
           flex-row

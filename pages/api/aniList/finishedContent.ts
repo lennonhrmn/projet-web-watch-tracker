@@ -6,13 +6,10 @@ import aniListFunctions from "@/lib/aniListFunctions";
 const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method !== 'GET') {
-        return res.status(405).end();
-    }
+    if (req.method !== 'GET') return res.status(405).end();
 
-    const { type } = req.query;
-
-    const finishedContent = await aniListFunctions.getFinishedContent(type as string);
+    const { type, page } = req.query;
+    const finishedContent = await aniListFunctions.getFinishedContent(type as string, page as string);
 
     return res.status(200).json(finishedContent);
 }

@@ -1,5 +1,4 @@
 import prismadb from "@/lib/prismadb";
-import { get } from "lodash";
 
 const aniListFunctions = {
     getFavorites,
@@ -15,9 +14,64 @@ const aniListFunctions = {
     getNewContent,
 };
 
-async function getFavorites(favoriteIds: string[], category: string): Promise<any> {
+async function fetchWithCache(query: string = "", variables: any = {}): Promise<any> {
+    const url = 'https://graphql.anilist.co',
+        options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query,
+                variables: variables
+            })
+        };
 
-    var query: string = `
+    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
+
+    // Check if the key with the value query already exists in the database
+    const cacheData = await prismadb.cacheData.findUnique({
+        where: { key: key }
+    });
+
+    if (cacheData) {
+        return JSON.parse(cacheData.value);
+    } else {
+        const data = await fetch(url, options).then(res => res.json()).catch(err => console.error(err));
+        const getData = () => (query.includes('Page(') && query.includes('media(')) ? data.data.Page?.media : data.data.Media;
+
+        // Store the data in the database with the unique cache key
+        prismadb.cacheData.create({
+            data: {
+                key: key,
+                value: JSON.stringify(getData()),
+                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
+            }
+        }).catch((error) => {
+            console.log("error", error);
+        });
+
+        return getData();
+    }
+}
+
+const watchCardDataFormat = `
+id
+title {
+    english
+    romaji
+}
+description(asHtml: true)
+popularity
+coverImage {
+    large
+    medium
+    color
+}`
+
+async function getFavorites(favoriteIds: string[], category: string): Promise<any> {
+    const query: string = `
         query ($ids: [Int]) {
             Page(perPage: 50){
                 media(id_in: $ids, type: ${category.toUpperCase()}) {
@@ -39,80 +93,15 @@ async function getFavorites(favoriteIds: string[], category: string): Promise<an
             }
         }`;
 
-    var variables = {
+    const variables = {
         ids: favoriteIds.map(id => parseInt(id))
     };
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                variables: variables
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query, variables);
 }
 
 async function getLastContentAnime(contentId: string): Promise<any> {
-
-    var query: string = `
+    const query: string = `
         query ($id: Int) {
             Media(id: $id, type: ANIME) {
                 episodes
@@ -122,426 +111,71 @@ async function getLastContentAnime(contentId: string): Promise<any> {
             }
         }`;
 
-    var variables = {
+    const variables = {
         id: parseInt(contentId)
     };
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                variables: variables
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query, variables);
 }
 
 async function getLastContentManga(contentId: string): Promise<any> {
-
-    var query: string = `
+    const query: string = `
         query ($id: Int) {
             Media(id: $id, type: MANGA) {
                 chapters
             }
         }`;
 
-    var variables = {
+    const variables = {
         id: parseInt(contentId)
     };
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                variables: variables
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query, variables);
 }
 
-async function getPopular(category: string): Promise<any> {
-
-    var query: string = `
+async function getPopular(category: string, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${category.toUpperCase()}, sort:POPULARITY_DESC, isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
-async function getTrending(category: string): Promise<any> {
-
-    var query: string = `
+async function getTrending(category: string, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${category.toUpperCase()}, sort:TRENDING_DESC, isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
-
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
-async function getFinishedContent(category: string): Promise<any> {
-
-    var query: string = `
+async function getFinishedContent(category: string, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${category.toUpperCase()}, status:FINISHED, isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
 async function getContentAnime(id: string): Promise<any> {
-    var query: string = `
+    const query: string = `
         query($id: Int) {  
             Media(id: $id, type:ANIME) {
                 type
@@ -598,75 +232,15 @@ async function getContentAnime(id: string): Promise<any> {
         }
     `;
 
-    var variables = {
+    const variables = {
         id: id
     };
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                variables: variables
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        // Remove all HTML tags from the description of each media item
-        data.data.Media.description = data.data.Media.description.replace(/<[^>]*>?/gm, '');
-        // Replace &quot; with "
-        data.data.Media.description = data.data.Media.description.replace(/&quot;/g, '"');
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query, variables);
 }
 
 async function getContentManga(id: string): Promise<any> {
-    var query: string = `
+    const query: string = `
         query($id: Int) {
             Media(id: $id, type:MANGA) {
                 type
@@ -709,338 +283,53 @@ async function getContentManga(id: string): Promise<any> {
         }
     `;
 
-    var variables = {
+    const variables = {
         id: id
     };
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                variables: variables
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variables: variables });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        // Remove all HTML tags from the description of each media item
-        data.data.Media.description = data.data.Media.description.replace(/<[^>]*>?/gm, '');
-        // Replace &quot; with "
-        data.data.Media.description = data.data.Media.description.replace(/&quot;/g, '"');
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query, variables);
 }
 
-async function getGenreContent(type: string, genre: string): Promise<any> {
-
-    var query: string = `
+async function getGenreContent(type: string, genre: string, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${type.toUpperCase()}, genre:"${genre}", isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
-async function getTagContent(type: string, genre: string): Promise<any> {
-
-    var query: string = `
+async function getTagContent(type: string, genre: string, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${type.toUpperCase()}, tag:"${genre}", isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
-async function getNewContent(category: string, date: String): Promise<any> {
-
-    var query: string = `
+async function getNewContent(category: string, date: String, page: string, perPage: string = '20'): Promise<any> {
+    const query: string = `
         query { 
-            Page(page: 1, perPage: 30) {
+            Page(page: ${page}, perPage: ${perPage}) {
                 media(type:${category.toUpperCase()}, sort:POPULARITY_DESC, startDate_greater:${date}, isAdult:false) {
-                    id
-                    title {
-                        english
-                    }
-                    description(asHtml: true)
-                    popularity
-                    coverImage {
-                        large
-                        medium
-                        color
-                    }
+                    ${watchCardDataFormat}
                 }
             }
         }
     `;
 
-    var url = 'https://graphql.anilist.co',
-        options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query
-            })
-        };
-
-    const key = JSON.stringify({ query: query.replace(/\s+/g, ''), variable: {} });
-
-    // Check if the key with the value query already exists in the database
-    const cacheData = await prismadb.cacheData.findUnique({
-        where: { key: key }
-    });
-
-    if (cacheData) {
-        console.log("using cache");
-        return JSON.parse(cacheData.value);
-    }
-
-    console.log("fetching data");
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (data.errors) {
-            console.error("AniList API returned errors:", data.errors);
-            return [];
-        }
-
-        if (!data.data || !data.data.Page || !data.data.Page.media) {
-            console.error("AniList API returned unexpected response structure:", data);
-            return [];
-        }
-
-        const cacheData = await prismadb.cacheData.findUnique({
-            where: { key: key }
-        });
-
-        if (cacheData) {
-            console.log("using cache");
-            return JSON.parse(cacheData.value);
-        }
-
-        // Store the data in the database with the unique cache key
-        prismadb.cacheData.create({
-            data: {
-                key: key,
-                value: JSON.stringify(data.data.Page.media),
-                expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-            }
-        }).catch((error) => {
-            console.log("error", error);
-        });
-
-        return data.data.Page.media;
-    } catch (error) {
-        console.error("error", error);
-        return [];
-    }
+    return fetchWithCache(query);
 }
 
 export default aniListFunctions;

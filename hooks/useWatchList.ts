@@ -1,12 +1,8 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
-const useWatchList = (category: string, type: String, genre: String | null = null) => {
-
-    let url = `/api/aniList/${category}?type=${type}`;
-    if (genre) {
-        url += `&genre=${genre}`;
-    }
+const useWatchList = (category: string, type: String, genre: String | null = null, page: number = 1) => {
+    let url = `/api/aniList/${category}?type=${type}&page=${page}${genre ? `&genre=${genre}` : ''}`;
 
     const { data, error, isLoading } = useSWR(url, fetcher, {
         revalidateOnFocus: false,
@@ -21,4 +17,10 @@ const useWatchList = (category: string, type: String, genre: String | null = nul
     };
 }
 
-export default useWatchList;
+const useWatchListNoHook = (category: string, type: String, genre: String | null = null, page: number = 1) => {
+    let url = `/api/aniList/${category}?type=${type}&page=${page}${genre ? `&genre=${genre}` : ''}`;
+
+    return fetcher(url);
+}
+
+export { useWatchList, useWatchListNoHook };

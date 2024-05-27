@@ -1,9 +1,14 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
-const useWatchList = (category: string, type: String) => {
+const useWatchList = (category: string, type: String, genre: String | null = null) => {
 
-    const { data, error, isLoading } = useSWR(`/api/aniList/${category}?type=${type}`, fetcher, {
+    let url = `/api/aniList/${category}?type=${type}`;
+    if (genre) {
+        url += `&genre=${genre}`;
+    }
+
+    const { data, error, isLoading } = useSWR(url, fetcher, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         revalidateOnReconnect: false,

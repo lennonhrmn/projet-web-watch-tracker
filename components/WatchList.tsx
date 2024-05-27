@@ -6,20 +6,20 @@ interface WatchListProps {
   data: Record<string, any>[];
   title: string;
   type: string;
+  // Ajoutez une référence
+  listRef: React.RefObject<HTMLDivElement>;
 }
 
-const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-
+const WatchList: React.FC<WatchListProps> = ({ data, title, type, listRef }) => {
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (ref.current) {
-        ref.current.scrollBy({ left: 900, behavior: 'smooth' });
+      if (listRef.current) {
+        listRef.current.scrollBy({ left: 900, behavior: 'smooth' });
       }
     },
     onSwipedRight: () => {
-      if (ref.current) {
-        ref.current.scrollBy({ left: -900, behavior: 'smooth' });
+      if (listRef.current) {
+        listRef.current.scrollBy({ left: -900, behavior: 'smooth' });
       }
     },
     preventScrollOnSwipe: true,
@@ -35,7 +35,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type }) => {
       </div>
       <div
         {...handlers}
-        ref={ref}
+        ref={listRef}
         className='grid grid-flow-col auto-cols-[15%] gap-[1vw] overflow-x-scroll no-scrollbar px-5'>
         {data && data.map((item) => (
           <WatchCard key={item?.id ?? 0} data={item} type={type} />

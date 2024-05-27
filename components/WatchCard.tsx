@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { FaHeart } from "react-icons/fa";
 import FavoriteButton from "./FavoriteButton";
+import useFavorite from "@/hooks/useFavorite";
+import { useEffect, useState } from "react";
 
 interface WatchCardProps {
   data: Record<string, any>;
@@ -9,6 +11,17 @@ interface WatchCardProps {
 
 const WatchCard: React.FC<WatchCardProps> = ({ data, type }) => {
   const router = useRouter();
+  const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
+  const { data: userFavorites } = useFavorite(type as string); // Récupérer les favoris de l'utilisateur
+
+  // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
+  useEffect(() => {
+    if (userFavorites && userFavorites.some((favorite: { id: number }) => favorite.id === parseInt(data.id as string))) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
+    }
+  }, [userFavorites, data.id]);
 
   const handleCardClick = () => {
     router.push({
@@ -39,7 +52,11 @@ const WatchCard: React.FC<WatchCardProps> = ({ data, type }) => {
           </div>
           <div className="flex flex-row items-center gap-3">
             <FavoriteButton contentId={data.id} type={type} />
-            <p className="text-xs text-white">Add to library</p>
+            {isFavorite ? (
+              <p className="text-xs text-white">Remove from library</p>
+            ) : (
+              <p className="text-xs text-white">Add to library</p>
+            )}
           </div>
         </div>
       </div>

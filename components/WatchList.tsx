@@ -73,8 +73,8 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
           content: '';
           display: block;
           height: 1.5vw;
-          width: 0.5rem;
-          margin-right: 1rem;
+          width: 1.0vw;
+          margin-right: 1vw;
           background-color: #ffffff;
         }
       `}</style>

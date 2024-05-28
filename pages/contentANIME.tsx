@@ -90,7 +90,7 @@ const ContentPage = () => {
     // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('https://' + window.location.host, {
+            const s = socket ? socket : io('http://' + window.location.host, {
                 query: { contentId: id, type: "ANIME", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
             });
             setSocket(s);

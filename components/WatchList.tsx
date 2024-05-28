@@ -1,7 +1,7 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import WatchCard from './WatchCard';
 import { useSwipeable } from 'react-swipeable';
-import { Triangle } from 'react-loader-spinner'
+import { Triangle } from 'react-loader-spinner';
 import { useWatchListNoHook } from '@/hooks/useWatchList';
 
 interface WatchListProps {
@@ -40,15 +40,15 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   useEffect(() => {
     if (!listRef.current || !data.length || page === 1) return;
 
-    const getNewData = async () => {
+    const fetchNewData = async () => {
       const newData = await useWatchListNoHook(category, type, genre, page);
       if (!newData.length) setStopLoading(true);
 
       setContent((prev) => [...prev, ...newData]);
-    }
+    };
 
-    getNewData()
-  }, [page]);
+    fetchNewData();
+  }, [page, category, type, genre, data.length, listRef]);
 
   let handlers = useSwipeable({
     onSwipedLeft: () => {

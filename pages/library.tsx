@@ -219,7 +219,9 @@ const Library = () => {
                             <option value="finishedWatching" className='text-black'>Finished Watching</option>
                         </select>
                     </div>
-                    <div className="px-5 flex flex-wrap gap-5 justify-center">
+                    <div
+                        className="px-5 flex flex-wrap gap-5 justify-center watch-cards"
+                    >
                         {filteredFavorites.map((item: Record<string, any>) => (
                             <WatchCard key={item.id} data={item} type={selectedCategory === "Anime" ? "ANIME" : "MANGA"} />
                         ))}

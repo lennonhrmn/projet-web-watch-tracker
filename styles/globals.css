@@ -54,3 +54,7 @@ body {
 img.gradient-bg-bottom {
   mask-image: linear-gradient(to top, transparent 0%, black 100%);
 }
+
+.watch-cards .WatchCard {
+  transform: scale(1);
+}

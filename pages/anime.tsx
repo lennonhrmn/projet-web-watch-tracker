@@ -112,10 +112,13 @@ const AnimePage = () => {
     return (
         <>
             <Navbar />
-            <div className="flex flex-row gap-8 mt-[10vh] ml-5 relative z-10">
-                <h1 className="text-white xs:text-[12px] sm2:text-2xl sm1:text-2xl md2:text-4xl md1:text-5xl lg:text-5xl xl:text-5xl">Anime</h1>
+            <div className="flex flex-row gap-[3vw] mt-[10vh] ml-5 relative z-10">
+                <h1
+                    style={{ fontSize: '3vw' }}
+                    className="text-white">Anime</h1>
                 <select id="genreSelect"
-                    className="cursor-pointer xs:text-[10px] sm2:text-[16px] sm1:text-[18px] md1:text-2xl md2:text-2xl lg:text-3xl xl:text-3xl text-white bg-transparent hover:text-gray-300 translation"
+                    style={{ marginTop: '0vh', fontSize: '3vw' }}
+                    className='cursor-pointer text-white bg-transparent hover:text-gray-300 translation'
                     onChange={handleGenreChange}
                     value={selectedGenre}>
                     <option value="Genre" className="bg-transparent hidden">Genre</option>

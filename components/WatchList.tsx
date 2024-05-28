@@ -67,7 +67,8 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   if (error) return <div>Error loading data</div>;
 
   return (
-    <div className='my-5 space-y-2'>
+    <div
+      className='space-y-2'>
       <style jsx>{`
         .watchCardTitle::before {
           content: '';
@@ -78,7 +79,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
           background-color: #ffffff;
         }
       `}</style>
-      <div className="watchCardTitle text-[1.5vw] text-white opacity-90 ml-5 flex flex-row items-center justify-start">
+      <div className="watchCardTitle text-[2.2vw] text-white opacity-90 ml-5 flex flex-row items-center justify-start">
         {title}
       </div>
       <div

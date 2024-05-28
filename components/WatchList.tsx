@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import WatchCard from './WatchCard';
 import { useSwipeable } from 'react-swipeable';
-import { Triangle } from 'react-loader-spinner'
-import { useWatchListNoHook } from '@/hooks/useWatchListNoHook';
+import { Triangle } from 'react-loader-spinner';
+import useSWR from "swr";
+import fetcher from "@/lib/fetcher";
 
 interface WatchListProps {
   data: Record<string, any>[];
@@ -18,7 +19,9 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   const [stopLoading, setStopLoading] = useState(false);
   const [content, setContent] = useState(data);
   const [page, setPage] = useState(1);
-  const [watchListData, setWatchListData] = useState([]); // Initialize state variable for watchListData
+
+  const url = `/api/aniList/${category}?type=${type}&page=${page}${genre ? `&genre=${genre}` : ''}`;
+  const { data: newData, error } = useSWR(url, fetcher);
 
   useEffect(() => {
     if (data.length) setContent(data);
@@ -39,18 +42,12 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   }, [data, stopLoading]);
 
   useEffect(() => {
-    if (!listRef.current || !data.length || page === 1) return;
-
-    const getNewData = async () => {
-      const newData = await useWatchListNoHook(category, type, genre, page); // Call the hook outside of useEffect
-      setWatchListData(newData); // Update state variable with new data
-      if (!newData.length) setStopLoading(true);
-
+    if (newData && newData.length) {
       setContent((prev) => [...prev, ...newData]);
+    } else if (newData && !newData.length) {
+      setStopLoading(true);
     }
-
-    getNewData()
-  }, [page]); // Remove watchListData from dependency array
+  }, [newData]);
 
   let handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -66,6 +63,8 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
     preventScrollOnSwipe: true,
     trackMouse: true,
   });
+
+  if (error) return <div>Error loading data</div>;
 
   return (
     <div className='my-5 space-y-2'>
@@ -86,8 +85,8 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
         {...handlers}
         ref={listRef}
         className='grid grid-flow-col xs:auto-cols-[40%] sm2:auto-cols-[32%] sm1:auto-cols-[27%] md2:auto-cols-[23%] md1:auto-cols-[18%] lg:auto-cols-[15%] xl:auto-cols-[11%] gap-[1vw] overflow-x-scroll no-scrollbar px-5'>
-        {content.map((item) => (
-          <WatchCard key={item.id} data={item} type={type} />
+        {content.map((item, index) => (
+          <WatchCard key={`${item.id}-${index}`} data={item} type={type} />
         ))}
         <div ref={loaderRef} className="group bg-zinc-900 rounded-md overflow-hidden shadow-md relative not-draggable flex justify-center items-center flex-col gap-4">
           <Triangle color="#ffffff" />

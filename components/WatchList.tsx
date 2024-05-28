@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import WatchCard from './WatchCard';
 import { useSwipeable } from 'react-swipeable';
-import { Triangle } from 'react-loader-spinner';
-import { useWatchListNoHook } from '@/hooks/useWatchList';
+import { Triangle } from 'react-loader-spinner'
+import { useWatchListNoHook } from '@/hooks/useWatchListNoHook';
 
 interface WatchListProps {
   data: Record<string, any>[];
@@ -18,6 +18,7 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   const [stopLoading, setStopLoading] = useState(false);
   const [content, setContent] = useState(data);
   const [page, setPage] = useState(1);
+  const [watchListData, setWatchListData] = useState([]); // Initialize state variable for watchListData
 
   useEffect(() => {
     if (data.length) setContent(data);
@@ -40,15 +41,16 @@ const WatchList: React.FC<WatchListProps> = ({ data, title, type, category, genr
   useEffect(() => {
     if (!listRef.current || !data.length || page === 1) return;
 
-    const fetchNewData = async () => {
-      const newData = await useWatchListNoHook(category, type, genre, page);
+    const getNewData = async () => {
+      const newData = await useWatchListNoHook(category, type, genre, page); // Call the hook outside of useEffect
+      setWatchListData(newData); // Update state variable with new data
       if (!newData.length) setStopLoading(true);
 
       setContent((prev) => [...prev, ...newData]);
-    };
+    }
 
-    fetchNewData();
-  }, [page, category, type, genre, data.length, listRef]);
+    getNewData()
+  }, [page]); // Remove watchListData from dependency array
 
   let handlers = useSwipeable({
     onSwipedLeft: () => {

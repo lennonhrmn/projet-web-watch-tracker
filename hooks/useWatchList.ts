@@ -17,10 +17,4 @@ const useWatchList = (category: string, type: String, genre: String | null = nul
     };
 }
 
-const useWatchListNoHook = (category: string, type: String, genre: String | null = null, page: number = 1) => {
-    let url = `/api/aniList/${category}?type=${type}&page=${page}${genre ? `&genre=${genre}` : ''}`;
-
-    return fetcher(url);
-}
-
-export { useWatchList, useWatchListNoHook };
+export default useWatchList;

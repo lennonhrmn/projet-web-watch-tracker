@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
 import PhotoALaUne from '@/components/PhotoALaUne';
-import { useWatchList } from '@/hooks/useWatchList';
+import useWatchList from '@/hooks/useWatchList';
 import React, { useEffect, useRef, useState } from 'react';
 import WatchList from '@/components/WatchList';
 import { getSession } from 'next-auth/react';

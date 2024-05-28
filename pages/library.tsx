@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { MdWavingHand } from "react-icons/md";
 import WatchCard from "@/components/WatchCard";
 import useFavorite from "@/hooks/useFavorite";
-import useFetchMultipleContent from "@/hooks/useFetchMultipleContent"
+import useFetchMultipleContent from "@/hooks/useFetchMultipleContent";
 import PhotoALaUne from '@/components/PhotoALaUne';
 import { Triangle } from 'react-loader-spinner';
 
@@ -47,9 +47,8 @@ const Library = () => {
 
     const [selectedStatus, setSelectedStatus] = useState<string>(getInitialStatus());
     const [selectedCategory, setSelectedCategory] = useState<string | null>(getInitialCategory);
-    const { data: favorites = [], mutate } = useFavorite(selectedCategory || "Anime");
-
-    const { data: contentData, isLoading, error } = useFetchMultipleContent(user?.id, favorites.map((item: any) => item.id));
+    const { data: favorites = [], mutate, isLoading: isFavoritesLoading } = useFavorite(selectedCategory || "Anime");
+    const { data: contentData, isLoading: isContentLoading, error } = useFetchMultipleContent(user?.id, favorites.map((item: any) => item.id));
 
     useEffect(() => {
         if (typeof window !== 'undefined' && selectedCategory) {
@@ -71,54 +70,73 @@ const Library = () => {
         setSelectedStatus(event.target.value);
     };
 
-    // Check if there are no favorites
+    // Show loading spinner while fetching favorites
+    if (isFavoritesLoading || isContentLoading) {
+        return (
+            <div className="bg-black">
+                <Navbar />
+                <div className="pt-16 flex justify-center items-center h-screen">
+                    <Triangle color="#ffffff" />
+                </div>
+            </div>
+        );
+    }
+
+    // Check if there are no favorites after data is fetched
     if (favorites.length === 0) {
         return (
             <div className="bg-black">
                 <Navbar />
                 <PhotoALaUne category={selectedCategory?.toLocaleLowerCase() || ''} backgroundOnly={true} />
                 <div className="pt-16">
-                    <div className="flex mt-5 justify-center text-white sm:text-2xl md:text-3xl">
+                    <div className="
+                    relative
+                    flex 
+                    mt-5 
+                    justify-center 
+                    text-white 
+                    xl:text-3xl lg:text-3xl md1:text-3xl md2:text-2xl sm1:text-1xl sm2:text-1xl xs:text-1xl
+                    xl:mt-5 lg:mt-5 md1:mt-4 md2:mt-4 sm1:mt-4 sm2:mt-3 xs:mt-3 
+                    ">
                         <h1 className="mr-3">Welcome {name}</h1>
                         <MdWavingHand className="mt-1" />
                     </div>
-                    <div className='ml-10'>
-                        <div className="p-5 flex gap-8">
-                            <h1 className="text-white sm:text-2xl md:text-3xl">My Library</h1>
+                    <div className="relative">
+                        <div className="xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-6 ml-5 pt-3 flex gap-8">
+                            <h1 className="text-white xs:text-1xl sm2:text-1xl sm1:text-1xl md2:text-2xl md1:text-3xl">My Library</h1>
                             <select id="categorySelect"
-                                className="cursor-pointer sm:text-1xl md:text-2xl mt-1 text-white bg-black hover:text-gray-300 translation"
+                                className="cursor-pointer xs:text-1xl sm2:text-1xl sm1:text-1xl md2:text-2xl md1:text-3xl text-white bg-transparent hover:text-gray-300 translation"
                                 onChange={handleCategoryChange}
                                 value={selectedCategory || ''}>
-                                <option value="Anime">Anime</option>
-                                <option value="Manga">Manga</option>
+                                <option value="Anime" className='text-black'>Anime</option>
+                                <option value="Manga" className='text-black'>Manga</option>
                             </select>
                         </div>
-                        <div className="p-5">
+                        <div className="xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-6 ml-5 pt-5 pb-5">
                             <select id="favoriteStatus"
-                                className="cursor-pointer sm:text-1xl md:text-2xl mt-1 text-white bg-black hover:text-gray-300 translation"
+                                className="
+                                cursor-pointer 
+                                xl:text-2xl lg:text-2xl md1:text-2xl md2:text-2xl sm1:text-1xl sm2:text-1xl xs:text-1xl text-white bg-transparent hover:text-gray-300 translation"
                                 onChange={handleStatusChange}
                                 value={selectedStatus}>
-                                <option value="watchList">WatchList</option>
-                                <option value="currentlyWatching">Currently Watching</option>
-                                <option value="finishedWatching">Finished Watching</option>
+                                <option value="watchList" className='text-black'>WatchList</option>
+                                <option value="currentlyWatching" className='text-black'>Currently Watching</option>
+                                <option value="finishedWatching" className='text-black'>Finished Watching</option>
                             </select>
                         </div>
-                        <div className='text-white p-5 space-y-1'>
+                        <div className="
+                            relative
+                            mt-5 
+                            text-white 
+                            xl:text-3xl lg:text-3xl md1:text-3xl md2:text-2xl sm1:text-1xl sm2:text-1xl xs:text-1xl
+                            xl:mt-5 lg:mt-5 md1:mt-4 md2:mt-4 sm1:mt-4 sm2:mt-3 xs:mt-3 
+                            xl:ml-16 lg:ml-16 md1:ml-16 md2:ml-16 sm1:ml-6 ml-5
+                            ">
                             <p>No favorites at the moment, what are you waiting for !</p>
                             <p>Go check content by clicking on category or the search bar ;)</p>
+                            <img src="/images/fond-ecran/noFavorites.jpg" alt="empty" className="mt-5 w-1/4 h-auto" />
                         </div>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (isLoading) {
-        return (
-            <div className="bg-black">
-                <Navbar />
-                <div className="pt-16 flex justify-center items-center h-screen">
-                    <Triangle color="#ffffff" />
                 </div>
             </div>
         );

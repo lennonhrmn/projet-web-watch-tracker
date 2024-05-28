@@ -252,35 +252,46 @@ const ContentPage = () => {
     return (
         <div>
             <Navbar />
-            <div className='relative'>
-                <img src={bannerSrc}
-                    className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom'
-                    style={{ maxHeight: '400px' }} />
+            {isLoading ? (
+                <div className="flex items-center justify-center h-screen">
+                    <Triangle
+                        height="100"
+                        width="100"
+                        color="#ffffff"
+                        ariaLabel="triangle-loading"
+                        visible={true}
+                    />
+                </div>
+            ) : (
+                <div className='relative'>
+                    <img src={bannerSrc}
+                        className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom'
+                        style={{ maxHeight: '400px' }} />
 
-                <div className='
+                    <div className='
                 absolute 
                 top-[20%]
                 z-0
                 '>
-                    <FaCircleArrowLeft
-                        size={40}
-                        className='relative z-10 top-32 ml-5 text-white cursor-pointer'
-                        onClick={handleBackButtonClick}
-                    />
-                    <div className='flex items-start z-2'>
-                        <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
-                        <div className={`${expanded ? 'relative ml-24 mt-24 z-3' : 'ml-24 mt-24'}`}>
-                            <p className="
+                        <FaCircleArrowLeft
+                            size={40}
+                            className='relative z-10 top-32 ml-5 text-white cursor-pointer'
+                            onClick={handleBackButtonClick}
+                        />
+                        <div className='flex items-start z-2'>
+                            <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
+                            <div className={`${expanded ? 'relative ml-24 mt-24 z-3' : 'ml-24 mt-24'}`}>
+                                <p className="
                             text-white
                             xl:text-4xl lg:text-4xl md1:text-4xl md2:text-4xl sm1:text-2xl sm2:text-1xl xs:text-[10px]
                             h-full
                             xl:w-[80%] lg:w-[80%] md1:w-[80%] md2:w-[70%] sm1:w-[70%] sm2:w-[70%] w-[80%]
                             font-bold
                             drop-shadow-xl">
-                                {title.english}
-                            </p>
-                            {showRomaji && (
-                                <p className="
+                                    {title.english}
+                                </p>
+                                {showRomaji && (
+                                    <p className="
                                 text-white
                                 md:text-1xl
                                 mt-2
@@ -288,120 +299,121 @@ const ContentPage = () => {
                                 xl:w-[40%] lg:w-[60%] md1:w-[70%] md2:w-[50%] sm1:w-[50%] sm2:w-[50%] w-[80%]
                                 font-bold
                                 drop-shadow-xl">
-                                    {title.romaji}
-                                </p>
-                            )}
-                            <div className="
+                                        {title.romaji}
+                                    </p>
+                                )}
+                                <div className="
                             text-white 
                             xl:text-[14px] lg:text-[14px] md1:text-[14px] md2:text-[14px] sm1:text-[12px] sm2:text-[10px] xs:text-[7px]
                             xl:mt-3 lg:mt-3 md1:mt-3 md2:mt-3 sm1:mt-3 sm2:mt-1 mt-1
                             w-[80%] 
                             drop-shadow-xl">
-                                <p>{truncatedDescription}</p>
-                                <div className='flex flex-row space-x-3 mt-1'>
-                                    <button className="bg-white text-white bg-opacity-30 rounded-md mt-1 mb-1 py-1 px-1 w-auto text-xs font-semibold flex flex-row items-center hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
-                                        {expanded ? (
-                                            <>
-                                                <CiUnread className='mr-1' />
-                                                Read Less
-                                            </>
-                                        ) : (
-                                            <>
-                                                <CiRead className='mr-1' />
-                                                Read More
-                                            </>
+                                    <p>{truncatedDescription}</p>
+                                    <div className='flex flex-row space-x-3 mt-1'>
+                                        <button className="bg-white text-white bg-opacity-30 rounded-md mt-1 mb-1 py-1 px-1 w-auto text-xs font-semibold flex flex-row items-center hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
+                                            {expanded ? (
+                                                <>
+                                                    <CiUnread className='mr-1' />
+                                                    Read Less
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <CiRead className='mr-1' />
+                                                    Read More
+                                                </>
+                                            )}
+                                        </button>
+                                        <div className='mt-1.5' onClick={handleFavoriteButtonClick}>
+                                            <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"ANIME"} />
+                                        </div>
+                                        <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
+                                            <p className='text-white text-xs'>{favorites}</p>
+                                            <FaHeart className='text-red-500 text-1xl' />
+                                        </div>
+                                        <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
+                                        {isFavorite && (
+                                            <div className='flex flex-row space-x-3'>
+                                                <DropdownList
+                                                    episodes={lastEpisode}
+                                                    onSelectEpisode={handleEpisodeClick}
+                                                    savedEpisodes={readEpisodes}
+                                                    selectedEpisode={selectedEpisode}
+                                                />
+                                            </div>
                                         )}
-                                    </button>
-                                    <div className='mt-1.5' onClick={handleFavoriteButtonClick}>
-                                        <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"ANIME"} />
                                     </div>
-                                    <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
-                                        <p className='text-white text-xs'>{favorites}</p>
-                                        <FaHeart className='text-red-500 text-1xl' />
+                                </div>
+                                {genres && (
+                                    <div className="flex mt-2">
+                                        {genres.map((genre: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
+                                            <div key={index} className="flex items-center justify-center border border-white rounded-md p-1 mr-1">
+                                                <p className="text-white text-xs">{genre}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                    {isFavorite && (
-                                        <div className='flex flex-row space-x-3'>
-                                            <DropdownList
-                                                episodes={lastEpisode}
-                                                onSelectEpisode={handleEpisodeClick}
-                                                savedEpisodes={readEpisodes}
-                                                selectedEpisode={selectedEpisode}
-                                            />
+                                )}
+                                <div className='flex'>
+                                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
+                                        <p className='text-white text-xs'>Release year - {startDate.year}</p>
+                                    </div>
+                                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
+                                        <p className='text-white text-xs'>Status - {status}</p>
+                                    </div>
+                                </div>
+                                {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
+                                    <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
+                                        <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
+                                    </div>
+                                )}
+                                <div className="w-[60%]">
+                                    <div className='flex flex-row space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-28 justify-center items-center'
+                                        onClick={handleCommentSection}>
+                                        <h2 className='text-white'>Comments</h2>
+                                        <FaCommentAlt className='text-white mt-1.5' />
+                                    </div>
+                                    {commentsOpen && (
+                                        <div>
+                                            {isAdmin ? (
+                                                <ul>
+                                                    {comments.map((comment: Comment, index: number) => (
+                                                        <li key={index} className='flex'>
+                                                            <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
+                                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <ul>
+                                                    {comments.map((comment: Comment, index: number) => (
+                                                        <li key={index}>
+                                                            <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                            <form onSubmit={handleSubmitComment}>
+                                                <textarea
+                                                    className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                    rows={4}
+                                                    value={commentContent}
+                                                    onChange={handleCommentContentChange}
+                                                    placeholder="Add a comment..."
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    Submit
+                                                </button>
+                                            </form>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                            {genres && (
-                                <div className="flex mt-2">
-                                    {genres.map((genre: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
-                                        <div key={index} className="flex items-center justify-center border border-white rounded-md p-1 mr-1">
-                                            <p className="text-white text-xs">{genre}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            <div className='flex'>
-                                <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                                    <p className='text-white text-xs'>Release year - {startDate.year}</p>
-                                </div>
-                                <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
-                                    <p className='text-white text-xs'>Status - {status}</p>
-                                </div>
-                            </div>
-                            {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
-                                <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                                    <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
-                                </div>
-                            )}
-                            <div className="w-[60%]">
-                                <div className='flex flex-row space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-28 justify-center items-center'
-                                    onClick={handleCommentSection}>
-                                    <h2 className='text-white'>Comments</h2>
-                                    <FaCommentAlt className='text-white mt-1.5' />
-                                </div>
-                                {commentsOpen && (
-                                    <div>
-                                        {isAdmin ? (
-                                            <ul>
-                                                {comments.map((comment: Comment, index: number) => (
-                                                    <li key={index} className='flex'>
-                                                        <MdDelete className='text-red-600 mt-1 mr-2 ml-2 cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
-                                                        <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <ul>
-                                                {comments.map((comment: Comment, index: number) => (
-                                                    <li key={index}>
-                                                        <p className='text-white'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                        <form onSubmit={handleSubmitComment}>
-                                            <textarea
-                                                className="mt-2 leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                rows={4}
-                                                value={commentContent}
-                                                onChange={handleCommentContentChange}
-                                                placeholder="Add a comment..."
-                                            />
-                                            <button
-                                                type="submit"
-                                                className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                            >
-                                                Submit
-                                            </button>
-                                        </form>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div >
     );
 };

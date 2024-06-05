@@ -10,7 +10,7 @@ export default function Home() {
     if (status === 'authenticated') {
       router.push('/library');
     } else if (status === 'unauthenticated') {
-      router.push('/auth');
+      router.push('/anime');
     }
   }, [status, router]);
 

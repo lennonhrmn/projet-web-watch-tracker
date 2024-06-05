@@ -22,7 +22,13 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
     let isFavorite = favoriteContent !== undefined;
 
     const toggleFavorite = useCallback(async () => {
+
         try {
+            if (!currentSession) {
+                alert("You must be logged in to add favorites");
+                return;
+            }
+
             contentId = `${contentId}`
 
             if (isFavorite) {

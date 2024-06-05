@@ -16,7 +16,7 @@ export async function getServerSideProps(context: NextPageContext) {
     if (!session) {
         return {
             redirect: {
-                destination: "/auth",
+                destination: "/anime",
                 permanent: false,
             },
         };
@@ -71,7 +71,7 @@ const Library = () => {
     };
 
     // Show loading spinner while fetching favorites
-    if (isFavoritesLoading || isContentLoading) {
+    if ((isFavoritesLoading || isContentLoading) && favorites.length !== 0) {
         return (
             <div className="bg-black">
                 <Navbar />

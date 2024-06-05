@@ -5,25 +5,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import WatchList from '@/components/WatchList';
 import { getSession } from 'next-auth/react';
 import { NextPageContext } from 'next';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
-export async function getServerSideProps(context: NextPageContext) {
-    const session = await getSession(context);
+// export async function getServerSideProps(context: NextPageContext) {
+//     const session = await getSession(context);
 
-    if (!session) {
-        return {
-            redirect: {
-                destination: "/auth",
-                permanent: false,
-            },
-        };
-    }
+//     if (!session) {
+//         return {
+//             redirect: {
+//                 destination: "/auth",
+//                 permanent: false,
+//             },
+//         };
+//     }
 
-    return {
-        props: {},
-    };
-}
+//     return {
+//         props: {},
+//     };
+// }
 
 const AnimePage = () => {
+
     const [selectedGenre, setSelectedGenre] = useState("Genre");
     const navbarHeight = -120; // Hauteur de la navbar
     const [navbarOffset, setNavbarOffset] = useState(0);

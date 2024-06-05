@@ -9,7 +9,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { contentId, type } = req.body;
 
     if (!currentUser || !currentUser.email) {
-        return res.status(401).json({ error: 'Not signed in' });
+        return;
     }
 
     if (req.method === 'POST') {

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import NavbarItem from './NavbarItem';
 import MobileMenu from './MobileMenu';
 import SearchBar from './searchBar';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 const TOP_OFFSET = 54;
 
@@ -13,6 +14,7 @@ const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,13 +53,21 @@ const Navbar = () => {
         `}
       >
         <div className="flex items-center">
-          <Link href="/library">
-            <img className="h-5" src="/images/logo/logo.png" alt="logo" />
-          </Link>
-          <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
+          {session !== null ? (
             <Link href="/library">
-              <NavbarItem label="Library" />
+              <img className="h-5" src="/images/logo/logo.png" alt="logo" />
             </Link>
+          ) : (
+            <Link href="/anime">
+              <img className="h-5" src="/images/logo/logo.png" alt="logo" />
+            </Link>
+          )}
+          <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">
+            {session !== null && (
+              <Link href="/library">
+                <NavbarItem label="Library" />
+              </Link>
+            )}
             <select
               id="categorySelect"
               className="bg-transparent cursor-pointer hover:text-gray-300 transition"
@@ -73,12 +83,20 @@ const Navbar = () => {
                 Manga
               </option>
             </select>
-            <Link href="/account">
-              <NavbarItem label="Account" />
-            </Link>
-            <div onClick={() => signOut({ callbackUrl: '/auth' })} className="cursor-pointer">
-              <NavbarItem label="Sign out" />
-            </div>
+            {session !== null && (
+              <Link href="/account">
+                <NavbarItem label="Account" />
+              </Link>
+            )}
+            {session === null ? (
+              <Link href="/auth">
+                <NavbarItem label="Sign in" />
+              </Link>
+            ) : (
+              <div onClick={() => signOut({ callbackUrl: '/anime' })} className="cursor-pointer">
+                <NavbarItem label="Sign out" />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex space-x-4">

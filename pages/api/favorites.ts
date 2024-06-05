@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const { currentUser } = await serveurAuth(req);
 
         if (!currentUser || !currentUser.id) {
-            return res.status(401).json({ error: 'Not signed in' });
+            return;
         }
 
         if (Array.isArray(category)) category = category[0];

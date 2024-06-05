@@ -8,7 +8,6 @@ const handler = async function handler(req: NextApiRequest, res: NextApiResponse
     }
 
     try {
-        await serveurAuth(req);
 
         const { category } = req.query;
 

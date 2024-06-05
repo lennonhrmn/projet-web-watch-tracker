@@ -1,3 +1,4 @@
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -10,6 +11,7 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const router = useRouter();
+    const { data: user } = useCurrentUser();
 
     if (!visible) return null;
 
@@ -38,9 +40,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
       ">
             <div className="flex flex-col gap-4">
                 <div className="px-3 text-center text-white hover:underline">
-                    <Link href="/library">
-                        Library
-                    </Link>
+                    {user !== undefined && user !== null && (
+                        <Link href="/library">
+                            Library
+                        </Link>
+                    )}
                 </div>
                 <div className="px-3 text-center text-white hover:underline">
                     <button
@@ -66,17 +70,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
                         </div>
                     )}
                 </div>
-                <div className="px-3 text-center text-white hover:underline">
-                    <Link href="/account">
-                        Account
+                {user !== undefined && user !== null && (
+                    <div className="px-3 text-center text-white hover:underline">
+                        <Link href="/account">
+                            Account
+                        </Link>
+                    </div>
+                )}
+                {user !== undefined && user !== null ? (
+                    <Link href="/auth" className="px-3 text-center text-white hover:underline">
+                        Sign In
                     </Link>
-                </div>
-                <div
-                    onClick={() => signOut({ callbackUrl: "/auth" })}
-                    className="px-3 text-center text-white hover:underline"
-                >
-                    Sign out
-                </div>
+                ) : (
+                    <div onClick={() => signOut({ callbackUrl: '/anime' })} className="px-3 text-center text-white hover:underline">
+                        Sign out
+                    </div>
+                )}
             </div>
         </div>
     );

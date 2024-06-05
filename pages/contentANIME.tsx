@@ -52,6 +52,18 @@ const ContentPage = () => {
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "ANIME"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
+    const [screenSize, setScreenSize] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setScreenSize(window.innerWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Nettoie l'écouteur d'événements lors du démontage du composant
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
     useEffect(() => {
@@ -262,7 +274,7 @@ const ContentPage = () => {
                         visible={true}
                     />
                 </div>
-            ) : (
+            ) : (screenSize !== null && screenSize >= 640) ? (
                 <div className='relative'>
                     <img src={bannerSrc}
                         className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom absolute'
@@ -361,14 +373,14 @@ const ContentPage = () => {
                                 </div>
                                 {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
                                     <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                                        <p className='text-white text-xs'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
+                                        <p className='text-white text-[1vw]'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
                                     </div>
                                 )}
                                 <div className="w-[60%]">
                                     <div className='flex flex-row items-center space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-[10vw] justify-center items-center'
                                         onClick={handleCommentSection}>
                                         <p className='text-white text-[1.5vw]'>Comments</p>
-                                        <FaCommentAlt className='text-white text-[1.5vw] mt-[1vh]' />
+                                        <FaCommentAlt className='text-white text-[1.5vw]' />
                                     </div>
                                     {commentsOpen && (
                                         <div>
@@ -401,6 +413,140 @@ const ContentPage = () => {
                                                 <button
                                                     type="submit"
                                                     className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    Submit
+                                                </button>
+                                            </form>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className='relative'>
+                    <img src={bannerSrc}
+                        className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom absolute'
+                        style={{ maxHeight: '400px' }} />
+                    <div className='z-0'>
+                        <FaCircleArrowLeft
+                            size={"6vw"}
+                            className='relative z-10 top-[10vh] ml-[3vw] text-white cursor-pointer'
+                            onClick={handleBackButtonClick}
+                        />
+                        <div className='flex flex-col items-center z-2'>
+                            <img src={coverImage.large} className='w-[32vw] relative z-1 top-10' />
+                            <div className="relative top-12 text-center z-3">
+                                <p className="text-white text-[6vw] font-bold drop-shadow-xl">
+                                    {title.english}
+                                </p>
+                                {showRomaji && (
+                                    <p className="text-white text-[4vw] mt-2 font-bold drop-shadow-xl">
+                                        {title.romaji}
+                                    </p>
+                                )}
+                                <div className='text-white text-[3vw] mx-[3vw] mt-2'>
+                                    <p className="text-white text-[3.5vw] drop-shadow-xl text-left">
+                                        {truncatedDescription}
+                                    </p>
+                                    <button className="bg-white text-white text-left mt-[1vh] bg-opacity-30 rounded-md p-[2vw] w-auto font-semibold flex flex-row hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
+                                        {expanded ? (
+                                            <>
+                                                <CiUnread className='mr-2' />
+                                                Read Less
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CiRead className='mr-2' />
+                                                Read More
+                                            </>
+                                        )}
+                                    </button>
+                                    <div className='flex flex-col items-center space-y-3 mt-2'>
+                                        <div className='flex flex-row space-x-3'>
+                                            <div className='flex flex-row items-center' onClick={handleFavoriteButtonClick}>
+                                                <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"ANIME"} />
+                                            </div>
+                                            {favorites !== undefined && (
+                                                <div className='flex flex-row items-center justify-center border border-white rounded-md p-1 space-x-1'>
+                                                    <p className='text-white text-[2.5vw]'>{favorites}</p>
+                                                    <FaHeart className='text-red-500 text-[4vw]' />
+                                                </div>
+                                            )}
+                                            <p className='text-white text-[4vw] flex flex-row items-center'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
+                                            {isFavorite && (
+                                                <div className='flex flex-row items-center space-x-3'>
+                                                    <DropdownList
+                                                        episodes={lastEpisode}
+                                                        onSelectEpisode={handleEpisodeClick}
+                                                        savedEpisodes={readEpisodes}
+                                                        selectedEpisode={selectedEpisode}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                {genres && (
+                                    <div className="flex flex-wrap justify-center mt-2">
+                                        {genres.map((genre: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
+                                            <div key={index} className="flex items-center justify-center border border-white rounded-md p-2 m-1">
+                                                <p className="text-white text-[2.5vw]">{genre}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className='flex flex-wrap justify-center'>
+                                    <div className='border border-white rounded-md flex justify-center items-center p-2 mt-2 m-1'>
+                                        <p className='text-white text-[2.5vw]'>Release year - {startDate.year}</p>
+                                    </div>
+                                    <div className='border border-white rounded-md flex justify-center items-center p-2 mt-2 m-1'>
+                                        <p className='text-white text-[2.5vw]'>Status - {status}</p>
+                                    </div>
+                                </div>
+                                {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
+                                    <div className='border border-white rounded-md flex justify-center items-center p-2 mt-2'>
+                                        <p className='text-white text-[2.5vw]'>Next episode - {formatTime(nextAiringEpisode.timeUntilAiring)}</p>
+                                    </div>
+                                )}
+                                <div className="w-[100%] mt-4">
+                                    <div className='flex flex-row items-center cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-2 w-[30vw] justify-center'
+                                        onClick={handleCommentSection}>
+                                        <p className='text-white text-[4vw]'>Comments</p>
+                                        <FaCommentAlt className='text-white ml-[1vw] text-[4vw]' />
+                                    </div>
+                                    {commentsOpen && (
+                                        <div className='mt-4 w-[80%]'>
+                                            {isAdmin ? (
+                                                <ul>
+                                                    {comments.map((comment: Comment, index: number) => (
+                                                        <li key={index} className='flex items-center'>
+                                                            <MdDelete className='text-red-600 text-[6vw] cursor-pointer' onClick={() => handleDeleteComment(comment.id.toString())} />
+                                                            <p className='text-white text-[3vw] ml-2'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <ul>
+                                                    {comments.map((comment: Comment, index: number) => (
+                                                        <li key={index}>
+                                                            <p className='text-white text-[3vw] ml-2'>{comment?.user?.firstName ?? "Na"} {comment?.user?.lastName ?? "Na"} : {comment.content}</p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                            <form onSubmit={handleSubmitComment} className="mt-2">
+                                                <textarea
+                                                    className="leading-relaxed block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-[3vw]"
+                                                    rows={4}
+                                                    value={commentContent}
+                                                    onChange={handleCommentContentChange}
+                                                    placeholder="Add a comment..."
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-[3vw] font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                                 >
                                                     Submit
                                                 </button>

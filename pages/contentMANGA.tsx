@@ -52,7 +52,17 @@ const ContentPage = () => {
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "MANGA"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
-    const [screenSize, setScreenSize] = useState<number | null>(window.innerWidth);
+    const [screenSize, setScreenSize] = useState<number | null>(null);
+
+    const handleBeforeUnload = () => {
+        if (socket) {
+            console.log('Disconnecting socket');
+            socket.disconnect();
+        }
+        console.log('resetting comments and comment content')
+        setCommentContent('');
+        setComments([]);
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -73,11 +83,6 @@ const ContentPage = () => {
         };
     }, []);
 
-    if (screenSize === null) {
-        // Affiche un message de chargement ou un état de chargement jusqu'à ce que la taille de l'écran soit disponible
-        return <div>Loading...</div>;
-    }
-
     // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
     useEffect(() => {
         if (userFavorites && userFavorites.some((favorite: { id: number }) => favorite.id === parseInt(id as string))) {
@@ -90,6 +95,12 @@ const ContentPage = () => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (screenSize === null) {
+            return; // Avoid executing further code if screenSize is null
+        }
+    }, [screenSize]); // Add screenSize to the dependency array
 
     useEffect(() => {
         if (router.isReady && isMounted && (!id || !type)) {
@@ -158,15 +169,9 @@ const ContentPage = () => {
         };
     }, [socket, router]);
 
-    const handleBeforeUnload = () => {
-        if (socket) {
-            console.log('Disconnecting socket');
-            socket.disconnect();
-        }
-        console.log('resetting comments and comment content')
-        setCommentContent('');
-        setComments([]);
-    };
+    if (screenSize === null) {
+        return <div>Loading...</div>;
+    }
 
     // Fonction appelée lorsque le bouton FavoriteButton est cliqué
     const handleFavoriteButtonClick = () => {

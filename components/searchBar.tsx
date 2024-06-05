@@ -6,23 +6,21 @@ import { FaBook } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import { GoVideo } from "react-icons/go";
 
+const useWindow = () => {
+  const [isWindow, setIsWindow] = useState(false);
+
+  useEffect(() => {
+    setIsWindow(true);
+  }, []);
+
+  return isWindow;
+};
+
 const SearchBar = () => {
   const [searchFormActive, setSearchFormActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchResults = useSearch(searchQuery);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // State pour la largeur de la fenêtre
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const isWindow = useWindow();
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,7 +36,7 @@ const SearchBar = () => {
     setSearchQuery('');
   };
 
-  const searchBarWidth = windowWidth < 780 ? '8vw' : '20vw';
+  const searchBarWidth = isWindow && window.innerWidth < 780 ? '8vw' : '20vw';
 
   return (
     <>

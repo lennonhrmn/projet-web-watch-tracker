@@ -53,8 +53,8 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
             className="
             cursor-pointer
             group/item
-            w-8
-            h-8
+            w-[2vw]
+            h-[2vw]
             border-2
             rounded-full
             flex
@@ -63,7 +63,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ contentId, type }) => {
             transition
             hover:border-neutral-300
             ">
-            <Icon size={15} className="text-white" />
+            <Icon size={"1vw"} className="text-white" />
         </div>
     );
 }

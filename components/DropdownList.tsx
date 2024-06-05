@@ -11,8 +11,8 @@ const DropdownList = ({ episodes, onSelectEpisode, savedEpisodes, selectedEpisod
     // }
 
     return (
-        <div className="h-5 w-28 mt-2.5 rounded-md">
-            <select onChange={handleChange} className="bg-transparent w-28" value={selectedEpisode ?? ''}>
+        <div className="rounded-md">
+            <select onChange={handleChange} className="bg-transparent" value={selectedEpisode ?? ''}>
                 <option value="" style={{ display: 'none' }}>Select episode</option>
                 {Array.from({ length: episodes }, (_, i) => i + 1).map((episode) => (
                     <option key={episode} value={episode} className={savedEpisodes.has(episode) ? 'bg-gray-400' : 'text-black'}>

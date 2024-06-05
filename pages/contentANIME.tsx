@@ -206,7 +206,7 @@ const ContentPage = () => {
         ? `${(description ?? '').slice(0, 200)}...`
         : (description ?? '');
 
-    const showRomaji = title.romaji && title.romaji !== title.english;
+    const showRomaji = title.romaji && title.romaji.toUpperCase() !== title.english.toUpperCase();
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
 
@@ -265,52 +265,49 @@ const ContentPage = () => {
             ) : (
                 <div className='relative'>
                     <img src={bannerSrc}
-                        className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom'
+                        className='w-full h-auto object-cover -z-1 opacity-20 gradient-bg-bottom absolute'
                         style={{ maxHeight: '400px' }} />
-
                     <div className='
-                absolute 
-                top-[20%]
-                z-0
-                '>
+                        z-0
+                        '>
                         <FaCircleArrowLeft
-                            size={40}
-                            className='relative z-10 top-32 ml-5 text-white cursor-pointer'
+                            size={"4vw"}
+                            className='relative z-10 top-[14vh] ml-[3vw] text-white cursor-pointer'
                             onClick={handleBackButtonClick}
                         />
                         <div className='flex items-start z-2'>
-                            <img src={coverImage.large} className={`${expanded ? 'w-full h-75 ml-32 mt-24 relative z-1' : 'ml-32 mt-24'} `} />
-                            <div className={`${expanded ? 'relative ml-24 mt-24 z-3' : 'ml-24 mt-24'}`}>
+                            <img src={coverImage.large} className='w-[16vw] top-[10vh] ml-[10vw] relative z-1' />
+                            <div className="relative top-[10vh] ml-[6vw] z-3">
                                 <p className="
-                            text-white
-                            xl:text-4xl lg:text-4xl md1:text-4xl md2:text-4xl sm1:text-2xl sm2:text-1xl xs:text-[10px]
-                            h-full
-                            xl:w-[80%] lg:w-[80%] md1:w-[80%] md2:w-[70%] sm1:w-[70%] sm2:w-[70%] w-[80%]
-                            font-bold
-                            drop-shadow-xl">
+                                    text-white
+                                    text-[3vw]
+                                    w-[80%]
+                                    font-bold
+                                    drop-shadow-xl">
                                     {title.english}
                                 </p>
                                 {showRomaji && (
                                     <p className="
                                 text-white
-                                md:text-1xl
-                                mt-2
-                                h-full
-                                xl:w-[40%] lg:w-[60%] md1:w-[70%] md2:w-[50%] sm1:w-[50%] sm2:w-[50%] w-[80%]
+                                text-[2vw]
+                                mt-[1vh]
+                                w-[80%]
                                 font-bold
                                 drop-shadow-xl">
                                         {title.romaji}
                                     </p>
                                 )}
-                                <div className="
-                            text-white 
-                            xl:text-[14px] lg:text-[14px] md1:text-[14px] md2:text-[14px] sm1:text-[12px] sm2:text-[10px] xs:text-[7px]
-                            xl:mt-3 lg:mt-3 md1:mt-3 md2:mt-3 sm1:mt-3 sm2:mt-1 mt-1
-                            w-[80%] 
-                            drop-shadow-xl">
-                                    <p>{truncatedDescription}</p>
-                                    <div className='flex flex-row space-x-3 mt-1'>
-                                        <button className="bg-white text-white bg-opacity-30 rounded-md mt-1 mb-1 py-1 px-1 w-auto text-xs font-semibold flex flex-row items-center hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
+                                <div className='text-white text-[1vw]'>
+                                    <p className="
+                                    text-white 
+                                    text-[1.2vw]
+                                    mt-[1vh]
+                                    w-[80%] 
+                                    drop-shadow-xl">
+                                        {truncatedDescription}
+                                    </p>
+                                    <div className='flex flex-row items-center space-x-3 mt-[1vh]'>
+                                        <button className="bg-white text-white bg-opacity-30 rounded-md p-[0.5vw] w-auto font-semibold flex flex-row items-center hover:bg-opacity-20 transition" onClick={truncatedDescription.length > 200 ? toggleDescription : undefined}>
                                             {expanded ? (
                                                 <>
                                                     <CiUnread className='mr-1' />
@@ -323,14 +320,16 @@ const ContentPage = () => {
                                                 </>
                                             )}
                                         </button>
-                                        <div className='mt-1.5' onClick={handleFavoriteButtonClick}>
+                                        <div className='mt-[0vh] flex flex-row items-center' onClick={handleFavoriteButtonClick}>
                                             <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"ANIME"} />
                                         </div>
-                                        <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
-                                            <p className='text-white text-xs'>{favorites}</p>
-                                            <FaHeart className='text-red-500 text-1xl' />
-                                        </div>
-                                        <p className='text-white text-2xl'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
+                                        {favorites !== undefined && (
+                                            <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
+                                                <p className='text-white text-xs'>{favorites}</p>
+                                                <FaHeart className='text-red-500 text-1xl' />
+                                            </div>
+                                        )}
+                                        <p className='text-white text-[1.5vw] flex flex-row items-center'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
                                         {isFavorite && (
                                             <div className='flex flex-row space-x-3'>
                                                 <DropdownList
@@ -344,20 +343,20 @@ const ContentPage = () => {
                                     </div>
                                 </div>
                                 {genres && (
-                                    <div className="flex mt-2">
+                                    <div className="flex mt-[1vh]">
                                         {genres.map((genre: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
                                             <div key={index} className="flex items-center justify-center border border-white rounded-md p-1 mr-1">
-                                                <p className="text-white text-xs">{genre}</p>
+                                                <p className="text-white text-[1vw]">{genre}</p>
                                             </div>
                                         ))}
                                     </div>
                                 )}
                                 <div className='flex'>
                                     <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 inline-flex'>
-                                        <p className='text-white text-xs'>Release year - {startDate.year}</p>
+                                        <p className='text-white text-[1vw]'>Release year - {startDate.year}</p>
                                     </div>
                                     <div className='border border-white rounded-md justify-center items-center flex p-1 mt-1 ml-1 inline-flex'>
-                                        <p className='text-white text-xs'>Status - {status}</p>
+                                        <p className='text-white text-[1vw]'>Status - {status}</p>
                                     </div>
                                 </div>
                                 {nextAiringEpisode && nextAiringEpisode.timeUntilAiring && (
@@ -366,10 +365,10 @@ const ContentPage = () => {
                                     </div>
                                 )}
                                 <div className="w-[60%]">
-                                    <div className='flex flex-row space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-28 justify-center items-center'
+                                    <div className='flex flex-row items-center space-x-2 cursor-pointer hover:bg-white hover:bg-opacity-10 rounded-md pt-1 w-[10vw] justify-center items-center'
                                         onClick={handleCommentSection}>
-                                        <h2 className='text-white'>Comments</h2>
-                                        <FaCommentAlt className='text-white mt-1.5' />
+                                        <p className='text-white text-[1.5vw]'>Comments</p>
+                                        <FaCommentAlt className='text-white text-[1.5vw] mt-[1vh]' />
                                     </div>
                                     {commentsOpen && (
                                         <div>

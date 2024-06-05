@@ -52,18 +52,31 @@ const ContentPage = () => {
     const [isFavorite, setIsFavorite] = useState(false); // Variable d'état pour suivre si le contenu a été ajouté aux favoris
     const { data: userFavorites } = useFavorite(type as string || "MANGA"); // Récupérer les favoris de l'utilisateur
     const isAdmin = user?.isAdmin;
-    const [screenSize, setScreenSize] = useState(window.innerWidth);
+    const [screenSize, setScreenSize] = useState<number | null>(window.innerWidth);
 
     useEffect(() => {
         const handleResize = () => {
             setScreenSize(window.innerWidth);
         };
 
-        window.addEventListener('resize', handleResize);
+        // Vérifie si window est défini avant d'ajouter l'écouteur d'événements de redimensionnement
+        if (typeof window !== 'undefined') {
+            setScreenSize(window.innerWidth);
+            window.addEventListener('resize', handleResize);
+        }
 
         // Nettoie l'écouteur d'événements lors du démontage du composant
-        return () => window.removeEventListener('resize', handleResize);
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('resize', handleResize);
+            }
+        };
     }, []);
+
+    if (screenSize === null) {
+        // Affiche un message de chargement ou un état de chargement jusqu'à ce que la taille de l'écran soit disponible
+        return <div>Loading...</div>;
+    }
 
     // Effectue une mise à jour de l'état isFavorite si le contenu est déjà dans les favoris de l'utilisateur
     useEffect(() => {

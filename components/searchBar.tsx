@@ -1,6 +1,6 @@
 import useSearch from '@/hooks/useSearch';
 import router from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
 import { FaBook } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
@@ -10,6 +10,19 @@ const SearchBar = () => {
   const [searchFormActive, setSearchFormActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchResults = useSearch(searchQuery);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // State pour la largeur de la fenêtre
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,6 +38,8 @@ const SearchBar = () => {
     setSearchQuery('');
   };
 
+  const searchBarWidth = windowWidth < 780 ? '8vw' : '20vw';
+
   return (
     <>
       {!searchFormActive && (
@@ -37,13 +52,14 @@ const SearchBar = () => {
       )}
       {searchFormActive && (
         <>
-          <form onSubmit={handleSearch} className="flex flex-row ml-auto gap-2 items-center">
+          <form onSubmit={handleSearch} className="flex flex-row ml-2 gap-2 items-center">
             <input
               type="text"
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="text-gray-200 bg-transparent focus:outline-none border-b-2 border-gray-400 px-2"
+              className="text-gray-200 bg-transparent focus:outline-none border-b-2 border-gray-400"
+              style={{ width: searchBarWidth }}
             />
           </form>
           <div

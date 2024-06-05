@@ -1,5 +1,4 @@
-import useCurrentUser from "@/hooks/useCurrentUser";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -11,7 +10,7 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const router = useRouter();
-    const { data: user } = useCurrentUser();
+    const { data: session } = useSession();
 
     if (!visible) return null;
 
@@ -40,7 +39,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
       ">
             <div className="flex flex-col gap-4">
                 <div className="px-3 text-center text-white hover:underline">
-                    {user !== undefined && user !== null && (
+                    {session !== null && (
                         <Link href="/library">
                             Library
                         </Link>
@@ -70,14 +69,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ visible }) => {
                         </div>
                     )}
                 </div>
-                {user !== undefined && user !== null && (
+                {session !== null && (
                     <div className="px-3 text-center text-white hover:underline">
                         <Link href="/account">
                             Account
                         </Link>
                     </div>
                 )}
-                {user !== undefined && user !== null ? (
+                {session === null ? (
                     <Link href="/auth" className="px-3 text-center text-white hover:underline">
                         Sign In
                     </Link>

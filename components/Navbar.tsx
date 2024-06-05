@@ -41,7 +41,7 @@ const Navbar = () => {
     <nav className="w-full top-0 fixed z-40">
       <div
         className={`
-          px-5
+          px-[2vw]
           py-6
           flex
           flex-row
@@ -55,11 +55,11 @@ const Navbar = () => {
         <div className="flex items-center">
           {session !== null ? (
             <Link href="/library">
-              <img className="h-5" src="/images/logo/logo.png" alt="logo" />
+              <img className="h-[2vh]" src="/images/logo/logo.png" alt="logo" />
             </Link>
           ) : (
             <Link href="/anime">
-              <img className="h-5" src="/images/logo/logo.png" alt="logo" />
+              <img className="h-[2vh]" src="/images/logo/logo.png" alt="logo" />
             </Link>
           )}
           <div className="text-white flex-row ml-7 hidden gap-7 sm:flex">

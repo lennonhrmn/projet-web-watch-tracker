@@ -112,7 +112,7 @@ const MangaPage = () => {
     return (
         <>
             <Navbar />
-            <div className="flex flex-row gap-[3vw] mt-[10vh] ml-5 relative z-10">
+            <div className="flex flex-row gap-[3vw] mt-[10vh] ml-[4vw] relative z-10">
                 <h1
                     style={{ fontSize: '3vw' }}
                     className="text-white">Anime</h1>

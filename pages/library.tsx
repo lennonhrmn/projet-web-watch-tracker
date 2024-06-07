@@ -134,7 +134,6 @@ const Library = () => {
                             ">
                             <p>No favorites at the moment, what are you waiting for !</p>
                             <p>Go check content by clicking on category or the search bar ;)</p>
-                            <img src="/images/fond-ecran/noFavorites.jpg" alt="empty" className="mt-5 w-1/4 h-auto" />
                         </div>
                     </div>
                 </div>

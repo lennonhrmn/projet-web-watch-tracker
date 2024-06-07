@@ -224,7 +224,7 @@ const ContentPage = () => {
         setExpanded(!expanded);
     };
 
-    const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favorites,
+    const { title, description, genres, status, chapters, volumes, startDate, coverImage, bannerImage, updatedAt, popularity, favourites,
         countryOfOrigin, sources, trailer, studios } = content ??
         {
             title: { english: '', romaji: '' }, description: '', genres: [], status: '', chapters: '', volumes: '', startDate: { year: '', month: '', day: '' },
@@ -236,7 +236,8 @@ const ContentPage = () => {
         ? `${(description ?? '').slice(0, 200)}...`
         : (description ?? '');
 
-    const showRomaji = title.romaji && title.romaji.toUpperCase() !== title.english.toUpperCase();
+    const showRomaji = title.romaji && (!title.english || title.romaji.toUpperCase() !== title.english.toUpperCase());
+
 
     const bannerSrc = bannerImage ? bannerImage : coverImage.extraLarge;
 
@@ -260,6 +261,10 @@ const ContentPage = () => {
             }
             return newchapters;
         });
+
+        if (lastChapter === 0 && chapterNumber !== null) {
+            lastChapter = chapterNumber + 1;
+        }
 
         // Appeler handleSavechapter ici pour sauvegarder l'épisode immédiatement après la sélection
         if (session?.user) {
@@ -353,14 +358,14 @@ const ContentPage = () => {
                                         <div className='mt-[0vh] flex flex-row items-center' onClick={handleFavoriteButtonClick}>
                                             <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"MANGA"} />
                                         </div>
-                                        {favorites !== undefined && (
+                                        {favourites !== undefined && (
                                             <div className='flex flex-row items-center justify-center border border-white rounded-md mt-2 mb-2 p-1 space-x-1'>
-                                                <p className='text-white text-xs'>{favorites}</p>
-                                                <FaHeart className='text-red-500 text-1xl' />
+                                                <p className='text-white text-[1vw]'>{favourites}</p>
+                                                <FaHeart className='text-red-500 text-[1vw]' />
                                             </div>
                                         )}
-                                        <p className='text-white text-[1.5vw] flex flex-row items-center'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                        {isFavorite && (
+                                        <p className='text-white text-[2vw] flex flex-row items-center'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
+                                        {(isFavorite && session !== null && status === 'FINISHED') && (
                                             <div className='flex flex-row space-x-3'>
                                                 <DropdownList
                                                     episodes={lastChapter}
@@ -368,6 +373,23 @@ const ContentPage = () => {
                                                     savedEpisodes={readChapters}
                                                     selectedEpisode={selectedChapter}
                                                 />
+                                            </div>
+                                        )}
+                                        {/* Si le manga est toujours en cours de publicatiion, afficher un input pour rentrer le dernier chapitre lu */}
+                                        {(isFavorite && session !== null && status !== 'FINISHED') && (
+                                            <div className='flex flex-row space-x-3'>
+                                                <input
+                                                    type="number"
+                                                    value={selectedChapter ?? ''}
+                                                    onChange={(e) => setSelectedChapter(parseInt(e.target.value))}
+                                                    className="border border-white rounded-md w-[4vw] p-1 text-black"
+                                                />
+                                                <button
+                                                    onClick={() => handleChapterClick(selectedChapter)}
+                                                    className="bg-white text-white bg-opacity-30 rounded-md p-1 font-semibold flex flex-row items-center hover:bg-opacity-20 transition"
+                                                >
+                                                    <FaRegCheckCircle className='text-green-500 text-[1.5vw]' />
+                                                </button>
                                             </div>
                                         )}
                                     </div>
@@ -481,14 +503,14 @@ const ContentPage = () => {
                                             <div className='flex flex-row items-center' onClick={handleFavoriteButtonClick}>
                                                 <FavoriteButton contentId={typeof id === 'string' ? id : ''} type={"MANGA"} />
                                             </div>
-                                            {favorites !== undefined && (
+                                            {favourites !== undefined && (
                                                 <div className='flex flex-row items-center justify-center border border-white rounded-md p-1 space-x-1'>
-                                                    <p className='text-white text-[2.5vw]'>{favorites}</p>
-                                                    <FaHeart className='text-red-500 text-[4vw]' />
+                                                    <p className='text-white text-[2vw]'>{favourites}</p>
+                                                    <FaHeart className='text-red-500 text-[2vw]' />
                                                 </div>
                                             )}
                                             <p className='text-white text-[4vw] flex flex-row items-center'><ReactCountryFlag countryCode={countryOfOrigin} svg /></p>
-                                            {isFavorite && (
+                                            {(isFavorite && session !== null && status === 'FINISHED') && (
                                                 <div className='flex flex-row items-center space-x-3'>
                                                     <DropdownList
                                                         episodes={lastChapter}
@@ -496,6 +518,22 @@ const ContentPage = () => {
                                                         savedEpisodes={readChapters}
                                                         selectedEpisode={selectedChapter}
                                                     />
+                                                </div>
+                                            )}
+                                            {(isFavorite && session !== null && status !== 'FINISHED') && (
+                                                <div className='flex flex-row space-x-3'>
+                                                    <input
+                                                        type="number"
+                                                        value={selectedChapter ?? ''}
+                                                        onChange={(e) => setSelectedChapter(parseInt(e.target.value))}
+                                                        className="border border-white rounded-md w-[8vw] p-[0.5vw] text-black"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleChapterClick(selectedChapter)}
+                                                        className="bg-white text-white bg-opacity-30 rounded-md p-1 font-semibold flex flex-row items-center hover:bg-opacity-20 transition"
+                                                    >
+                                                        <FaRegCheckCircle className='text-green-500 text-[4vw]' />
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>

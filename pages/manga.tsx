@@ -115,7 +115,7 @@ const MangaPage = () => {
             <div className="flex flex-row gap-[3vw] mt-[10vh] ml-[4vw] relative z-10">
                 <h1
                     style={{ fontSize: '3vw' }}
-                    className="text-white">Anime</h1>
+                    className="text-white">Manga</h1>
                 <select id="genreSelect"
                     style={{ marginTop: '0vh', fontSize: '3vw' }}
                     className='cursor-pointer text-white bg-transparent hover:text-gray-300 translation'

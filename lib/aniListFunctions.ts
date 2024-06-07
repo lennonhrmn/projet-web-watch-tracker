@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 
+
 const aniListFunctions = {
     getFavorites,
     getLastContentAnime,
@@ -54,6 +55,12 @@ async function fetchWithCache(query: string = "", variables: any = {}): Promise<
 
         return getData();
     }
+}
+
+// Function to strip HTML tags from a string
+function stripHTML(input: string): string {
+    const doc = new DOMParser().parseFromString(input, 'text/html');
+    return doc.body.textContent || "";
 }
 
 const watchCardDataFormat = `

@@ -1,5 +1,4 @@
-const https = require('https'); // Use https instead of http
-const fs = require('fs');
+const https = require('https');
 const { parse } = require('url');
 const next = require('next');
 const { Server } = require('socket.io');
@@ -11,8 +10,7 @@ const handle = app.getRequestHandler();
 const prisma = new PrismaClient();
 
 app.prepare().then(() => {
-    // Use https.createServer with the SSL options
-    const server = https.createServer(sslOptions, (req, res) => {
+    const server = https.createServer((req, res) => {
         const parsedUrl = parse(req.url, true);
         handle(req, res, parsedUrl);
     });

@@ -20,7 +20,10 @@ app.prepare().then(() => {
             origin: '*',
             methods: ['GET', 'POST'],
         },
+        transports: ['websocket'],
+        secure: true, // Ensure secure WebSocket connection
     });
+
 
     console.log('Server started');
 

@@ -123,11 +123,12 @@ const ContentPage = () => {
     }, [lastContentWatched]);
 
 
-    // Connexion au serveur de sockets
     useEffect(() => {
         if (user) {
-            const s = socket ? socket : io('http://' + window.location.host, {
-                query: { contentId: id, type: "ANIME", user: JSON.stringify(user) }, // Envoyer l'ID du contenu et le type de contenu au serveur de sockets 
+            const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const s = socket ? socket : io(`${socketProtocol}://watch-tracker.onrender.com`, {
+                query: { contentId: id, type: "ANIME", user: JSON.stringify(user) },
+                transports: ['websocket'], // Use WebSocket transport
             });
             setSocket(s);
 
@@ -142,11 +143,10 @@ const ContentPage = () => {
                 });
             });
 
-            // Ajouter l'événement de déchargement de la page pour gérer la déconnexion du socket
+            // Add the beforeunload event listener
             window.addEventListener('beforeunload', handleBeforeUnload);
-
         }
-        // Nettoyer l'événement lors du démontage du composant
+
         return () => {
             if (socket) {
                 socket.disconnect();

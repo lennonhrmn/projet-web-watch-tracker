@@ -42,6 +42,11 @@ async function fetchWithCache(query: string = "", variables: any = {}): Promise<
         const data = await fetch(url, options).then(res => res.json()).catch(err => console.error(err));
         const getData = () => (query.includes('Page(') && query.includes('media(')) ? data.data.Page?.media : data.data.Media;
 
+        // Nettoyer la description en enlevant les balises HTML
+        if (getData()?.description) {
+            getData().description = getData().description.replace(/<[^>]*>?/gm, '');
+        }
+
         // Store the data in the database with the unique cache key
         prismadb.cacheData.create({
             data: {
@@ -55,12 +60,6 @@ async function fetchWithCache(query: string = "", variables: any = {}): Promise<
 
         return getData();
     }
-}
-
-// Function to strip HTML tags from a string
-function stripHTML(input: string): string {
-    const doc = new DOMParser().parseFromString(input, 'text/html');
-    return doc.body.textContent || "";
 }
 
 const watchCardDataFormat = `

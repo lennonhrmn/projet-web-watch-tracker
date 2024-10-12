@@ -5,12 +5,6 @@ const next = require('next');
 const { Server } = require('socket.io');
 const { PrismaClient } = require('@prisma/client');
 
-// Load your SSL certificates
-const sslOptions = {
-    key: fs.readFileSync('/path/to/your/ssl/key.pem'), // Path to your private key
-    cert: fs.readFileSync('/path/to/your/ssl/cert.pem') // Path to your certificate
-};
-
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();

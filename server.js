@@ -1,4 +1,4 @@
-const https = require('https');
+const http = require('http');
 const { parse } = require('url');
 const next = require('next');
 const { Server } = require('socket.io');
@@ -10,7 +10,7 @@ const handle = app.getRequestHandler();
 const prisma = new PrismaClient();
 
 app.prepare().then(() => {
-    const server = https.createServer((req, res) => {
+    const server = http.createServer((req, res) => {
         const parsedUrl = parse(req.url, true);
         handle(req, res, parsedUrl);
     });
